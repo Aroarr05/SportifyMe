@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.5.3'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'io.freefair.lombok' version '8.6' // Plugin para Lombok (genera getters/setters automáticos)
 }
 
 group = 'com.aroa'
@@ -18,13 +19,25 @@ repositories {
 }
 
 dependencies {
+    // Spring Boot Starters
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // Base de datos
     runtimeOnly 'com.mysql:mysql-connector-j'
+
+    // Lombok (getters/setters automáticos)
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // Testing
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // BCrypt para cifrar contraseñas (opcional, ya incluido en Spring Security)
+    implementation 'org.springframework.security:spring-security-crypto'
 }
 
 tasks.named('test') {
