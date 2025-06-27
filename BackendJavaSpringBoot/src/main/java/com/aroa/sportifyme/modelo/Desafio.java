@@ -2,7 +2,6 @@ package com.aroa.sportifyme.modelo;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,13 +33,15 @@ public class Desafio {
     @Column(nullable = false)
     private LocalDateTime fechaFin;
 
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private boolean esPublico = true;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creador_id", nullable = false)
     private Usuario creador;
 
     @OneToMany(mappedBy = "desafio", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Progreso> progresos = new ArrayList<>();
-
 
     public void agregarProgreso(Progreso progreso) {
         progresos.add(progreso);

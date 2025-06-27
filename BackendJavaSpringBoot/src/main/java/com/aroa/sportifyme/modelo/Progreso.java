@@ -1,9 +1,11 @@
 package com.aroa.sportifyme.modelo;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
+@Data
 @Entity
 @Table(name = "progresos")
 public class Progreso {
@@ -15,7 +17,10 @@ public class Progreso {
     private Double valorActual;
 
     @Column(nullable = false)
-    private LocalDateTime fechaRegistro = LocalDateTime.now();
+    private LocalDateTime fechaRegistro;
+
+    @Column(length = 500)
+    private String comentario;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
@@ -25,40 +30,15 @@ public class Progreso {
     @JoinColumn(name = "desafio_id", nullable = false)
     private Desafio desafio;
 
-    // Getters y Setters
-    public Long getId() {
-        return id;
+    // Constructores
+    public Progreso() {
+        this.fechaRegistro = LocalDateTime.now();
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Double getValorActual() {
-        return valorActual;
-    }
-
-    public void setValorActual(Double valorActual) {
+    public Progreso(Double valorActual, Usuario usuario, Desafio desafio) {
+        this();
         this.valorActual = valorActual;
-    }
-
-    public LocalDateTime getFechaRegistro() {
-        return fechaRegistro;
-    }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
-    }
-
-    public Desafio getDesafio() {
-        return desafio;
-    }
-
-    public void setDesafio(Desafio desafio) {
         this.desafio = desafio;
     }
 }

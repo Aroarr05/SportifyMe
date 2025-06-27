@@ -1,7 +1,9 @@
 package com.aroa.sportifyme.modelo;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
 @Entity
 @Table(name = "participaciones")
 public class Participacion {
@@ -16,5 +18,4 @@ public class Participacion {
     @ManyToOne
     @JoinColumn(name = "desafio_id")
     private Desafio desafio;
-    // Getters y setters
 }
