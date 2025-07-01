@@ -8,7 +8,7 @@ public class JwtAuthResponse {
         this.tokenDeAcceso = tokenDeAcceso;
     }
 
-    // Getters y Setters
+    // Getters y Setters (usar @Data de Lombok si lo tienes)
     public String getTokenDeAcceso() { return tokenDeAcceso; }
     public void setTokenDeAcceso(String tokenDeAcceso) { this.tokenDeAcceso = tokenDeAcceso; }
     public String getTipoDeToken() { return tipoDeToken; }

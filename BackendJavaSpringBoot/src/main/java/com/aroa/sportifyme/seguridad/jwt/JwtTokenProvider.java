@@ -1,9 +1,12 @@
 package com.aroa.sportifyme.seguridad.jwt;
 
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import java.security.Key;
 import java.util.Date;
 
 @Component
@@ -15,6 +18,10 @@ public class JwtTokenProvider {
     @Value("${app.jwt-expiration-ms}")
     private int jwtExpirationMs;
 
+    private Key getSigningKey() {
+        return Keys.hmacShaKeyFor(jwtSecret.getBytes());
+    }
+
     public String generarToken(Authentication authentication) {
         String username = authentication.getName();
         Date ahora = new Date();
@@ -24,13 +31,14 @@ public class JwtTokenProvider {
                 .setSubject(username)
                 .setIssuedAt(ahora)
                 .setExpiration(expiracion)
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                 .compact();
     }
 
     public String obtenerUsernameDeToken(String token) {
-        return Jwts.parser()
-                .setSigningKey(jwtSecret)
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
@@ -38,10 +46,22 @@ public class JwtTokenProvider {
 
     public boolean validarToken(String token) {
         try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
+            Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token);
             return true;
-        } catch (Exception ex) {
-            return false;
+        } catch (SignatureException ex) {
+            // Firma inválida
+        } catch (MalformedJwtException ex) {
+            // Token mal formado
+        } catch (ExpiredJwtException ex) {
+            // Token expirado
+        } catch (UnsupportedJwtException ex) {
+            // Token no soportado
+        } catch (IllegalArgumentException ex) {
+            // Claims vacío
         }
+        return false;
     }
 }

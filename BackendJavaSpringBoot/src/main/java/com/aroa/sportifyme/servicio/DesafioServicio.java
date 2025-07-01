@@ -33,4 +33,8 @@ public class DesafioServicio {
     public void eliminarDesafio(Long id) {
         desafioDAO.eliminar(id);
     }
+
+    public List<Desafio> listarTodos() {
+        return desafioDAO.listarTodos();
+    }
 }

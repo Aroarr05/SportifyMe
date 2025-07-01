@@ -2,19 +2,21 @@ package com.aroa.sportifyme.servicio;
 
 import com.aroa.sportifyme.dao.UsuarioDAO;
 import com.aroa.sportifyme.modelo.Usuario;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
 public class UsuarioServicio {
 
-    @Autowired
-    private UsuarioDAO usuarioDAO;
+    private final UsuarioDAO usuarioDAO;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    // Inyección por constructor (mejor práctica)
+    public UsuarioServicio(UsuarioDAO usuarioDAO, PasswordEncoder passwordEncoder) {
+        this.usuarioDAO = usuarioDAO;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public void registrarUsuario(Usuario usuario) {
         usuario.setContraseña(passwordEncoder.encode(usuario.getContraseña()));

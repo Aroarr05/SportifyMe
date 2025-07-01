@@ -16,11 +16,9 @@ import java.util.Optional;
 public class DesafioDAOImpl implements DesafioDAO {
 
     private final JdbcTemplate jdbcTemplate;
-    private final UsuarioDAO usuarioDAO;
 
-    public DesafioDAOImpl(JdbcTemplate jdbcTemplate, UsuarioDAO usuarioDAO) {
+    public DesafioDAOImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.usuarioDAO = usuarioDAO;
     }
 
     @Override
@@ -64,12 +62,22 @@ public class DesafioDAOImpl implements DesafioDAO {
 
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
-                Desafio desafio = mapearDesafio(rs);
+                Desafio desafio = new Desafio();
+                desafio.setId(rs.getLong("id"));
+                desafio.setTitulo(rs.getString("titulo"));
+                desafio.setDescripcion(rs.getString("descripcion"));
+                desafio.setTipoActividad(TipoActividad.valueOf(rs.getString("tipo_actividad")));
+                desafio.setObjetivo(rs.getDouble("objetivo"));
+                desafio.setFechaInicio(rs.getTimestamp("fecha_inicio").toLocalDateTime());
+                desafio.setFechaFin(rs.getTimestamp("fecha_fin").toLocalDateTime());
+                desafio.setEsPublico(rs.getBoolean("es_publico"));
+
                 Usuario creador = new Usuario();
                 creador.setId(rs.getLong("usuario_id"));
                 creador.setNombre(rs.getString("nombre"));
                 creador.setEmail(rs.getString("email"));
                 desafio.setCreador(creador);
+
                 return desafio;
             }, id));
         } catch (Exception e) {
@@ -86,7 +94,15 @@ public class DesafioDAOImpl implements DesafioDAO {
             """;
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            Desafio desafio = mapearDesafio(rs);
+            Desafio desafio = new Desafio();
+            desafio.setId(rs.getLong("id"));
+            desafio.setTitulo(rs.getString("titulo"));
+            desafio.setDescripcion(rs.getString("descripcion"));
+            desafio.setTipoActividad(TipoActividad.valueOf(rs.getString("tipo_actividad")));
+            desafio.setObjetivo(rs.getDouble("objetivo"));
+            desafio.setFechaInicio(rs.getTimestamp("fecha_inicio").toLocalDateTime());
+            desafio.setFechaFin(rs.getTimestamp("fecha_fin").toLocalDateTime());
+            desafio.setEsPublico(rs.getBoolean("es_publico"));
             desafio.setCreador(creador);
             return desafio;
         }, creador.getId());
@@ -104,11 +120,50 @@ public class DesafioDAOImpl implements DesafioDAO {
             """;
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            Desafio desafio = mapearDesafio(rs);
+            Desafio desafio = new Desafio();
+            desafio.setId(rs.getLong("id"));
+            desafio.setTitulo(rs.getString("titulo"));
+            desafio.setDescripcion(rs.getString("descripcion"));
+            desafio.setTipoActividad(TipoActividad.valueOf(rs.getString("tipo_actividad")));
+            desafio.setObjetivo(rs.getDouble("objetivo"));
+            desafio.setFechaInicio(rs.getTimestamp("fecha_inicio").toLocalDateTime());
+            desafio.setFechaFin(rs.getTimestamp("fecha_fin").toLocalDateTime());
+            desafio.setEsPublico(rs.getBoolean("es_publico"));
+
             Usuario creador = new Usuario();
             creador.setId(rs.getLong("usuario_id"));
             creador.setNombre(rs.getString("nombre"));
             desafio.setCreador(creador);
+
+            return desafio;
+        });
+    }
+
+    // Nuevo método para listar todos los desafíos
+    public List<Desafio> listarTodos() {
+        String sql = """
+            SELECT d.*, u.id as usuario_id, u.nombre 
+            FROM desafios d
+            JOIN usuarios u ON d.creador_id = u.id
+            ORDER BY d.fecha_inicio DESC
+            """;
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Desafio desafio = new Desafio();
+            desafio.setId(rs.getLong("id"));
+            desafio.setTitulo(rs.getString("titulo"));
+            desafio.setDescripcion(rs.getString("descripcion"));
+            desafio.setTipoActividad(TipoActividad.valueOf(rs.getString("tipo_actividad")));
+            desafio.setObjetivo(rs.getDouble("objetivo"));
+            desafio.setFechaInicio(rs.getTimestamp("fecha_inicio").toLocalDateTime());
+            desafio.setFechaFin(rs.getTimestamp("fecha_fin").toLocalDateTime());
+            desafio.setEsPublico(rs.getBoolean("es_publico"));
+
+            Usuario creador = new Usuario();
+            creador.setId(rs.getLong("usuario_id"));
+            creador.setNombre(rs.getString("nombre"));
+            desafio.setCreador(creador);
+
             return desafio;
         });
     }
@@ -142,19 +197,5 @@ public class DesafioDAOImpl implements DesafioDAO {
     public void eliminar(Long id) {
         String sql = "DELETE FROM desafios WHERE id = ?";
         jdbcTemplate.update(sql, id);
-    }
-
-    // Método auxiliar para mapear resultados
-    private Desafio mapearDesafio(java.sql.ResultSet rs) throws java.sql.SQLException {
-        Desafio desafio = new Desafio();
-        desafio.setId(rs.getLong("id"));
-        desafio.setTitulo(rs.getString("titulo"));
-        desafio.setDescripcion(rs.getString("descripcion"));
-        desafio.setTipoActividad(TipoActividad.valueOf(rs.getString("tipo_actividad")));
-        desafio.setObjetivo(rs.getDouble("objetivo"));
-        desafio.setFechaInicio(rs.getTimestamp("fecha_inicio").toLocalDateTime());
-        desafio.setFechaFin(rs.getTimestamp("fecha_fin").toLocalDateTime());
-        desafio.setEsPublico(rs.getBoolean("es_publico"));
-        return desafio;
     }
 }

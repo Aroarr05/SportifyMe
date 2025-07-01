@@ -16,4 +16,5 @@ public interface DesafioDAO {
     void actualizar(Desafio desafio);
     void eliminar(Long id);
     List<Desafio> listarDesafiosActivos();
+    List<Desafio> listarTodos();
 }
