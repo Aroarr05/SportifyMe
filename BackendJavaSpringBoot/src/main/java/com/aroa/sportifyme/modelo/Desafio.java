@@ -21,11 +21,14 @@ public class Desafio {
     private String descripcion;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "ENUM('correr', 'ciclismo', 'natación', 'gimnasio')")
     private TipoActividad tipoActividad;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 10, scale = 2)
     private Double objetivo;
+
+    @Column(nullable = false, length = 20)
+    private String unidadObjetivo;  // Nuevo campo para coincidir con la tabla
 
     @Column(nullable = false)
     private LocalDateTime fechaInicio;

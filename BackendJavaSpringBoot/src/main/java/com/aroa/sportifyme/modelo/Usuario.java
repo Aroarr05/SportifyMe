@@ -16,6 +16,10 @@ public class Usuario {
     @Column(nullable = false, length = 100)
     private String nombre;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private RolUsuario rol = RolUsuario.USUARIO;
+
     @Column(nullable = false, unique = true, length = 100)
     private String email;
 
@@ -33,11 +37,9 @@ public class Usuario {
         this.fechaRegistro = LocalDateTime.now();
     }
 
-    public Usuario(String nombre, String email, String contraseñaHash) {
-        this();
-        this.nombre = nombre;
-        this.email = email;
-        this.contraseña = contraseñaHash;
+    public enum RolUsuario {
+        USUARIO,
+        ADMIN
     }
 
     // Métodos importantes

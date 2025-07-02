@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UsuarioDAO {
+    Usuario save(Usuario usuario);
     void create(Usuario usuario);
     List<Usuario> getAll();
     Optional<Usuario> find(int id);
