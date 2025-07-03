@@ -1,6 +1,5 @@
 package com.aroa.sportifyme.servicio;
 
-import com.aroa.sportifyme.dao.UsuarioDAO;
 import com.aroa.sportifyme.modelo.Usuario;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

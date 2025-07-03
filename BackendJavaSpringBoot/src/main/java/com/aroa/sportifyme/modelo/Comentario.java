@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "participaciones")
-public class Participacion {
+@Table(name = "comentarios")
+public class Comentario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,6 +20,15 @@ public class Participacion {
     @JoinColumn(name = "desafio_id", nullable = false)
     private Desafio desafio;
 
-    @Column(name = "fecha_union", nullable = false)
-    private LocalDateTime fechaUnion = LocalDateTime.now();
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String contenido;
+
+    @Column(name = "fecha_creacion", nullable = false)
+    private LocalDateTime fechaCreacion = LocalDateTime.now();
+
+    @Column(nullable = false)
+    private Boolean editado = false;
+
+    @Column(name = "fecha_edicion")
+    private LocalDateTime fechaEdicion;
 }

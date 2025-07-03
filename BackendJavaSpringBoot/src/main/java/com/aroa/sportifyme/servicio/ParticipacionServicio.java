@@ -1,6 +1,5 @@
 package com.aroa.sportifyme.servicio;
 
-import com.aroa.sportifyme.dao.ParticipacionDAO;
 import com.aroa.sportifyme.modelo.Desafio;
 import com.aroa.sportifyme.modelo.Participacion;
 import com.aroa.sportifyme.modelo.Usuario;

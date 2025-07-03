@@ -2,8 +2,10 @@ package com.aroa.sportifyme.modelo;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -29,41 +31,37 @@ public class Usuario {
     @Column(name = "avatar_url", length = 255)
     private String avatarUrl;
 
+    @Column(columnDefinition = "TEXT")
+    private String biografia;
+
+    @Column(length = 100)
+    private String ubicacion;
+
+    @Column(name = "fecha_nacimiento")
+    private LocalDate fechaNacimiento;
+
+    @Enumerated(EnumType.STRING)
+    private Genero genero;
+
+    @Column(precision = 5, scale = 2)
+    private Double peso;
+
+    private Integer altura;
 
     @Column(name = "fecha_registro", nullable = false, updatable = false)
-    private LocalDateTime fechaRegistro;
+    private LocalDateTime fechaRegistro = LocalDateTime.now();
 
-    public Usuario() {
-        this.fechaRegistro = LocalDateTime.now();
-    }
+    @Column(name = "ultimo_login")
+    private LocalDateTime ultimoLogin;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UsuarioLogro> logrosObtenidos = new ArrayList<>();
 
     public enum RolUsuario {
         USUARIO,
         ADMIN
     }
 
-    // Métodos importantes
-    @Override
-    public String toString() {
-        return "Usuario{" +
-                "id=" + id +
-                ", nombre='" + nombre + '\'' +
-                ", email='" + email + '\'' +
-                ", avatarUrl='" + avatarUrl + '\'' +
-                ", fechaRegistro=" + fechaRegistro +
-                '}';
-    }
-
-    // Equals y hashCode basados en el ID
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Usuario usuario)) return false;
-        return getId().equals(usuario.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return getId().hashCode();
-    }
+    // Constructor por defecto
+    public Usuario() {}
 }

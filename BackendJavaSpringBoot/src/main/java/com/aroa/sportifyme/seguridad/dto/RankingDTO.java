@@ -1,13 +1,12 @@
-package com.aroa.sportifyme.seguridad.dto;
+package com.aroa.sportifyme.dto;
 
-import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
 public class RankingDTO {
+    private Long usuarioId;
     private String nombreUsuario;
-    private double promedioMinutosPorKm;
-    private double distanciaTotal;
-    private int posicion; // Se calcula en el frontend o servicio
+    private int posicion;
+    private double valorActual;
+    private String avatarUrl; // Opcional para la UI
 }

@@ -3,8 +3,6 @@ package com.aroa.sportifyme.modelo;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @Entity
@@ -17,37 +15,38 @@ public class Desafio {
     @Column(nullable = false, length = 100)
     private String titulo;
 
-    @Column(length = 500)
+    @Column(columnDefinition = "TEXT")
     private String descripcion;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "ENUM('correr', 'ciclismo', 'natación', 'gimnasio')")
+    @Column(name = "tipo_actividad", nullable = false)
     private TipoActividad tipoActividad;
 
-    @Column(nullable = false, precision = 10, scale = 2)
+    @Column(precision = 10, scale = 2)
     private Double objetivo;
 
-    @Column(nullable = false, length = 20)
-    private String unidadObjetivo;  // Nuevo campo para coincidir con la tabla
+    @Column(name = "unidad_objetivo", length = 20)
+    private String unidadObjetivo;
 
-    @Column(nullable = false)
+    @Column(name = "fecha_inicio", nullable = false)
     private LocalDateTime fechaInicio;
 
-    @Column(nullable = false)
+    @Column(name = "fecha_fin", nullable = false)
     private LocalDateTime fechaFin;
-
-    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
-    private boolean esPublico = true;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creador_id", nullable = false)
     private Usuario creador;
 
-    @OneToMany(mappedBy = "desafio", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Progreso> progresos = new ArrayList<>();
+    @Column(name = "es_publico", nullable = false)
+    private Boolean esPublico = true;
 
-    public void agregarProgreso(Progreso progreso) {
-        progresos.add(progreso);
-        progreso.setDesafio(this);
-    }
+    @Column(name = "imagen_url", length = 255)
+    private String imagenUrl;
+
+    @Enumerated(EnumType.STRING)
+    private DificultadDesafio dificultad;
+
+    @Column(name = "max_participantes")
+    private Integer maxParticipantes;
 }
