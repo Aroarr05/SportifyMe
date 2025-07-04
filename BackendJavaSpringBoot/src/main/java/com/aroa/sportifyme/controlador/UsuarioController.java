@@ -1,9 +1,13 @@
 package com.aroa.sportifyme.controlador;
 
+import com.aroa.sportifyme.dto.UsuarioRegistroDTO;
 import com.aroa.sportifyme.modelo.Usuario;
 import com.aroa.sportifyme.servicio.UsuarioServicio;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -11,14 +15,23 @@ public class UsuarioController {
 
     private final UsuarioServicio usuarioServicio;
 
-    // Inyección por constructor (forma recomendada)
     public UsuarioController(UsuarioServicio usuarioServicio) {
         this.usuarioServicio = usuarioServicio;
     }
 
     @PostMapping("/registro")
-    public ResponseEntity<Usuario> registrarUsuario(@RequestBody Usuario usuario) {
-        usuarioServicio.registrarUsuario(usuario);
-        return ResponseEntity.ok(usuario);
+    public ResponseEntity<Usuario> registrarUsuario(@Valid @RequestBody UsuarioRegistroDTO registroDTO) {
+        Usuario usuario = convertirDtoAEntidad(registroDTO);
+        Usuario usuarioRegistrado = usuarioServicio.registrarUsuario(usuario);
+        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioRegistrado);
+    }
+
+    private Usuario convertirDtoAEntidad(UsuarioRegistroDTO dto) {
+        Usuario usuario = new Usuario();
+        usuario.setNombre(dto.getNombre());
+        usuario.setEmail(dto.getEmail());
+        usuario.setContraseña(dto.getContraseña());
+        // Otros campos si son necesarios
+        return usuario;
     }
 }

@@ -25,8 +25,11 @@ public class DesafioController {
     }
 
     @PostMapping
-    public ResponseEntity<Desafio> crearDesafio(@RequestBody Desafio desafio) {
+    public ResponseEntity<Desafio> crearDesafio(
+            @RequestBody Desafio desafio,
+            @RequestHeader("X-User-ID") Long creadorId) {
+
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(desafioServicio.crearDesafio(desafio));
+                .body(desafioServicio.crearDesafio(desafio, creadorId));
     }
 }

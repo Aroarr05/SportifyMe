@@ -1,7 +1,7 @@
 package com.aroa.sportifyme.servicio;
 
 import com.aroa.sportifyme.modelo.*;
-import com.aroa.sportifyme.dao.*;
+import com.aroa.sportifyme.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

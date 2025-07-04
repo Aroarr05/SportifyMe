@@ -1,4 +1,4 @@
-package com.aroa.sportifyme.dao;
+package com.aroa.sportifyme.repository;
 
 import com.aroa.sportifyme.modelo.Comentario;
 import org.springframework.data.jpa.repository.JpaRepository;

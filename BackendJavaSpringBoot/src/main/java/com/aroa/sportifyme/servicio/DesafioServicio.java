@@ -1,13 +1,13 @@
 package com.aroa.sportifyme.servicio;
 
-import com.aroa.sportifyme.modelo.Desafio;
-import com.aroa.sportifyme.modelo.Usuario;
-import com.aroa.sportifyme.dao.DesafioRepository;
+import com.aroa.sportifyme.exception.*;
+import com.aroa.sportifyme.modelo.*;
+import com.aroa.sportifyme.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.LocalDateTime;
-import java.util.List;
+import java.time.*;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -18,17 +18,27 @@ public class DesafioServicio {
 
     @Transactional
     public Desafio crearDesafio(Desafio desafio, Long creadorId) {
-        Usuario creador = usuarioServicio.buscarPorId(creadorId)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+        validarDesafio(desafio);
 
+        Usuario creador = usuarioServicio.buscarPorId(creadorId);
         desafio.setCreador(creador);
+
+        if (desafio.getEsPublico() == null) {
+            desafio.setEsPublico(true);
+        }
+
         return desafioRepository.save(desafio);
     }
 
     @Transactional(readOnly = true)
     public Desafio buscarPorId(Long id) {
         return desafioRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Desafío no encontrado"));
+                .orElseThrow(() -> new DesafioNoEncontradoException(id));
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Desafio> buscarPorIdOptional(Long id) {
+        return desafioRepository.findById(id);
     }
 
     @Transactional(readOnly = true)
@@ -49,21 +59,16 @@ public class DesafioServicio {
 
     @Transactional
     public Desafio actualizarDesafio(Long id, Desafio desafioActualizado, Long usuarioId) {
+        validarDesafio(desafioActualizado);
+
         Desafio desafioExistente = buscarPorId(id);
         Usuario usuario = usuarioServicio.buscarPorId(usuarioId);
 
-        if (!desafioExistente.getCreador().equals(usuario)) {
-            throw new IllegalArgumentException("No tienes permiso para modificar este desafío");
+        if (!tienePermisosParaModificar(desafioExistente, usuario)) {
+            throw new AccesoNoAutorizadoException("actualizar", "desafío", id);
         }
 
-        desafioExistente.setTitulo(desafioActualizado.getTitulo());
-        desafioExistente.setDescripcion(desafioActualizado.getDescripcion());
-        desafioExistente.setTipoActividad(desafioActualizado.getTipoActividad());
-        desafioExistente.setObjetivo(desafioActualizado.getObjetivo());
-        desafioExistente.setFechaInicio(desafioActualizado.getFechaInicio());
-        desafioExistente.setFechaFin(desafioActualizado.getFechaFin());
-        desafioExistente.setEsPublico(desafioActualizado.isEsPublico());
-
+        actualizarCamposPermitidos(desafioExistente, desafioActualizado);
         return desafioRepository.save(desafioExistente);
     }
 
@@ -72,8 +77,8 @@ public class DesafioServicio {
         Desafio desafio = buscarPorId(id);
         Usuario usuario = usuarioServicio.buscarPorId(usuarioId);
 
-        if (!desafio.getCreador().equals(usuario)) {
-            throw new IllegalArgumentException("No tienes permiso para eliminar este desafío");
+        if (!tienePermisosParaModificar(desafio, usuario)) {
+            throw new AccesoNoAutorizadoException("eliminar", "desafío", id);
         }
 
         desafioRepository.delete(desafio);
@@ -82,5 +87,42 @@ public class DesafioServicio {
     @Transactional(readOnly = true)
     public boolean existeDesafio(Long id) {
         return desafioRepository.existsById(id);
+    }
+
+    private void validarDesafio(Desafio desafio) {
+        if (desafio.getTitulo() == null || desafio.getTitulo().trim().isEmpty()) {
+            throw new IllegalArgumentException("El título es obligatorio");
+        }
+        if (desafio.getTipoActividad() == null) {
+            throw new IllegalArgumentException("El tipo de actividad es obligatorio");
+        }
+        if (desafio.getFechaInicio() == null || desafio.getFechaFin() == null) {
+            throw new IllegalArgumentException("Las fechas son obligatorias");
+        }
+        if (desafio.getFechaFin().isBefore(desafio.getFechaInicio())) {
+            throw new IllegalArgumentException("La fecha de fin debe ser posterior a la de inicio");
+        }
+        if (desafio.getMaxParticipantes() != null && desafio.getMaxParticipantes() <= 0) {
+            throw new IllegalArgumentException("El máximo de participantes debe ser positivo");
+        }
+    }
+
+    private void actualizarCamposPermitidos(Desafio existente, Desafio actualizado) {
+        existente.setTitulo(actualizado.getTitulo());
+        existente.setDescripcion(actualizado.getDescripcion());
+        existente.setTipoActividad(actualizado.getTipoActividad());
+        existente.setObjetivo(actualizado.getObjetivo());
+        existente.setUnidadObjetivo(actualizado.getUnidadObjetivo());
+        existente.setFechaInicio(actualizado.getFechaInicio());
+        existente.setFechaFin(actualizado.getFechaFin());
+        existente.setEsPublico(actualizado.getEsPublico());
+        existente.setDificultad(actualizado.getDificultad());
+        existente.setMaxParticipantes(actualizado.getMaxParticipantes());
+        existente.setImagenUrl(actualizado.getImagenUrl());
+    }
+
+    private boolean tienePermisosParaModificar(Desafio desafio, Usuario usuario) {
+        return desafio.getCreador().equals(usuario) ||
+                usuario.getRol() == Usuario.RolUsuario.ADMIN;
     }
 }
