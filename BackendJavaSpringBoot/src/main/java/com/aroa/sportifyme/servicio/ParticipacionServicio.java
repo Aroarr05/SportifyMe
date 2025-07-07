@@ -17,13 +17,15 @@ public class ParticipacionServicio {
     private final ParticipacionRepository participacionRepository;
     private final UsuarioServicio usuarioServicio;
     private final DesafioServicio desafioServicio;
+    private final NotificacionServicio notificacionServicio;
 
     @Transactional
     public Participacion unirseADesafio(Long desafioId, String emailUsuario) {
         Usuario usuario = usuarioServicio.buscarPorEmail(emailUsuario)
                 .orElseThrow(() -> new UsuarioNoEncontradoException(emailUsuario));
 
-        Desafio desafio = desafioServicio.buscarPorId(desafioId);
+        Desafio desafio = desafioServicio.buscarPorId(desafioId)
+                .orElseThrow(() -> new DesafioNoEncontradoException(desafioId));
 
         validarParticipacion(usuario, desafio);
 
@@ -32,25 +34,10 @@ public class ParticipacionServicio {
         participacion.setDesafio(desafio);
         participacion.setFechaUnion(LocalDateTime.now());
 
-        return participacionRepository.save(participacion);
-    }
+        Participacion participacionGuardada = participacionRepository.save(participacion);
+        notificarNuevaParticipacion(desafio, usuario);
 
-    private void validarParticipacion(Usuario usuario, Desafio desafio) {
-        // Verificar si ya está participando
-        if (participacionRepository.existsByUsuarioIdAndDesafioId(usuario.getId(), desafio.getId())) {
-            throw new ParticipacionExistenteException(usuario.getId(), desafio.getId());
-        }
-
-        // Verificar fechas del desafío
-        if (LocalDateTime.now().isAfter(desafio.getFechaFin())) {
-            throw new DesafioExpiradoException(desafio.getId());
-        }
-
-        // Verificar límite de participantes
-        if (desafio.getMaxParticipantes() != null &&
-                participacionRepository.countByDesafioId(desafio.getId()) >= desafio.getMaxParticipantes()) {
-            throw new LimiteParticipantesException(desafio.getId(), desafio.getMaxParticipantes());
-        }
+        return participacionGuardada;
     }
 
     @Transactional
@@ -63,21 +50,10 @@ public class ParticipacionServicio {
         validarFechaDesafio(participacion.getDesafio());
 
         participacionRepository.delete(participacion);
+        notificarAbandonoDesafio(participacion.getDesafio(), usuario);
     }
 
-    private void validarPermisosAbandono(Participacion participacion, Usuario usuario) {
-        if (!participacion.getUsuario().equals(usuario) &&
-                !usuario.getRol().equals(Usuario.RolUsuario.ADMIN)) {
-            throw new AccesoNoAutorizadoException("abandonar", "participación", participacion.getId());
-        }
-    }
-
-    private void validarFechaDesafio(Desafio desafio) {
-        if (LocalDateTime.now().isAfter(desafio.getFechaFin())) {
-            throw new DesafioExpiradoException(desafio.getId());
-        }
-    }
-
+    // Métodos de consulta
     @Transactional(readOnly = true)
     public Participacion findById(Long id) {
         return participacionRepository.findById(id)
@@ -97,5 +73,73 @@ public class ParticipacionServicio {
     @Transactional(readOnly = true)
     public boolean usuarioParticipaEnDesafio(Long usuarioId, Long desafioId) {
         return participacionRepository.existsByUsuarioIdAndDesafioId(usuarioId, desafioId);
+    }
+
+    @Transactional(readOnly = true)
+    public long contarParticipantesPorDesafio(Long desafioId) {
+        return participacionRepository.countByDesafioId(desafioId);
+    }
+
+    // Métodos de validación
+    private void validarParticipacion(Usuario usuario, Desafio desafio) {
+        if (usuarioParticipaEnDesafio(usuario.getId(), desafio.getId())) {
+            throw new ParticipacionExistenteException(usuario.getId(), desafio.getId());
+        }
+
+        if (LocalDateTime.now().isAfter(desafio.getFechaFin())) {
+            throw new DesafioExpiradoException(desafio.getId());
+        }
+
+        if (desafio.getMaxParticipantes() != null &&
+                contarParticipantesPorDesafio(desafio.getId()) >= desafio.getMaxParticipantes()) {
+            throw new LimiteParticipantesException(
+                    desafio.getId(),
+                    desafio.getMaxParticipantes() // Usar int directamente
+            );
+        }
+    }
+
+    private void validarPermisosAbandono(Participacion participacion, Usuario usuario) {
+        if (!participacion.getUsuario().equals(usuario) &&
+                !usuario.getRol().equals(Usuario.RolUsuario.ADMIN)) {
+            throw new AccesoNoAutorizadoException(
+                    "abandonar",
+                    "participación",
+                    participacion.getId()
+            );
+        }
+    }
+
+    private void validarFechaDesafio(Desafio desafio) {
+        if (LocalDateTime.now().isAfter(desafio.getFechaFin())) {
+            throw new DesafioExpiradoException(desafio.getId());
+        }
+    }
+
+    // Métodos de notificación
+    private void notificarNuevaParticipacion(Desafio desafio, Usuario usuario) {
+        if (!desafio.getCreador().equals(usuario)) {
+            String mensaje = String.format("%s se unió a tu desafío '%s'",
+                    usuario.getNombre(), desafio.getTitulo());
+            notificacionServicio.crearNotificacion(
+                    desafio.getCreador().getId(),
+                    "PARTICIPACION",
+                    mensaje,
+                    "/desafios/" + desafio.getId()
+            );
+        }
+    }
+
+    private void notificarAbandonoDesafio(Desafio desafio, Usuario usuario) {
+        if (!desafio.getCreador().equals(usuario)) {
+            String mensaje = String.format("%s abandonó tu desafío '%s'",
+                    usuario.getNombre(), desafio.getTitulo());
+            notificacionServicio.crearNotificacion(
+                    desafio.getCreador().getId(),
+                    "PARTICIPACION",
+                    mensaje,
+                    "/desafios/" + desafio.getId()
+            );
+        }
     }
 }

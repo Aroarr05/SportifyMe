@@ -29,8 +29,11 @@ public class Notificacion {
     @Column(nullable = false)
     private Boolean leida = false;
 
-    @Column(name = "fecha_creacion", nullable = false)
+    @Column(name = "fecha_creacion", nullable = false, updatable = false)
     private LocalDateTime fechaCreacion = LocalDateTime.now();
+
+    @Column(name = "fecha_edicion")
+    private LocalDateTime fechaEdicion;
 
     public enum TipoNotificacion {
         LOGRO,

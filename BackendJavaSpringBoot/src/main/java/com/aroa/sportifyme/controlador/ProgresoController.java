@@ -1,12 +1,13 @@
 package com.aroa.sportifyme.controlador;
 
-import com.aroa.sportifyme.dto.ProgresoDTO;
+
 import com.aroa.sportifyme.dto.RankingDTO;
+import com.aroa.sportifyme.exception.BusinessException;
 import com.aroa.sportifyme.modelo.Progreso;
+import com.aroa.sportifyme.seguridad.dto.ProgresoDTO;
 import com.aroa.sportifyme.servicio.ProgresoServicio;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,30 +29,22 @@ public class ProgresoController {
     private final ProgresoServicio progresoServicio;
 
     @PostMapping
-    @Operation(summary = "Registrar progreso",
-            responses = {
-                    @ApiResponse(responseCode = "201", description = "Progreso registrado exitosamente"),
-                    @ApiResponse(responseCode = "400", description = "Datos inválidos"),
-                    @ApiResponse(responseCode = "401", description = "No autorizado")
-            })
+    @Operation(summary = "Registrar progreso")
     public ResponseEntity<?> registrarProgreso(
             @Valid @RequestBody ProgresoDTO progresoDTO,
             Authentication authentication) {
-
         try {
-            String email = authentication.getName();
-            Progreso progreso = progresoServicio.registrarProgreso(progresoDTO, email);
-
+            Progreso progreso = progresoServicio.registrarProgreso(progresoDTO, authentication.getName());
             URI location = ServletUriComponentsBuilder
                     .fromCurrentRequest()
                     .path("/{id}")
                     .buildAndExpand(progreso.getId())
                     .toUri();
-
             return ResponseEntity.created(location).body(progreso);
-        } catch (IllegalArgumentException e) {
+        } catch (BusinessException e) {
             return ResponseEntity.badRequest().body(Map.of(
                     "error", e.getMessage(),
+                    "status", 400,
                     "timestamp", System.currentTimeMillis()
             ));
         }

@@ -1,12 +1,15 @@
 package com.aroa.sportifyme.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class RankingDTO {
     private Long usuarioId;
     private String nombreUsuario;
-    private int posicion;
-    private double valorActual;
-    private String avatarUrl; // Opcional para la UI
+    private Double valorActual;
+    private String avatarUrl;
 }

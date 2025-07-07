@@ -16,6 +16,7 @@ public class ComentarioServicio {
     private final ComentarioRepository comentarioRepository;
     private final UsuarioServicio usuarioServicio;
     private final DesafioServicio desafioServicio;
+    private final ParticipacionServicio participacionServicio; // Asegúrate de inyectar esto
 
     @Transactional
     public Comentario crearComentario(Long desafioId, String contenido, String emailUsuario) {
@@ -25,7 +26,11 @@ public class ComentarioServicio {
                 .orElseThrow(() -> new UsuarioNoEncontradoException(emailUsuario));
 
         Desafio desafio = desafioServicio.buscarPorId(desafioId);
-        validarParticipacionUsuario(usuario, desafio);
+
+        // Usa participacionServicio en lugar de desafioServicio
+        if (!participacionServicio.usuarioParticipaEnDesafio(usuario.getId(), desafio.getId())) {
+            throw new ParticipacionNoEncontradaException(usuario.getId(), desafio.getId());
+        }
 
         Comentario comentario = new Comentario();
         comentario.setContenido(contenido);
@@ -87,7 +92,8 @@ public class ComentarioServicio {
     }
 
     private void validarParticipacionUsuario(Usuario usuario, Desafio desafio) {
-        if (!desafioServicio.usuarioParticipaEnDesafio(usuario.getId(), desafio.getId())) {
+        // Cambiar de desafioServicio a participacionServicio
+        if (!participacionServicio.usuarioParticipaEnDesafio(usuario.getId(), desafio.getId())) {
             throw new ParticipacionNoEncontradaException(usuario.getId(), desafio.getId());
         }
     }

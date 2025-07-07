@@ -5,12 +5,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.FORBIDDEN) // 403 Forbidden
 public class LimiteParticipantesException extends RuntimeException {
-    public LimiteParticipantesException(String message) {
-        super(message);
-    }
-
-    public LimiteParticipantesException(String resourceName, int maxParticipantes) {
-        super(String.format("El %s ha alcanzado el límite máximo de %d participantes",
-                resourceName, maxParticipantes));
+    // Versión que acepta Long e Integer
+    public LimiteParticipantesException(Long desafioId, Integer maxParticipantes) {
+        super(String.format("El desafío %d ha alcanzado el límite de %d participantes",
+                desafioId, maxParticipantes));
     }
 }

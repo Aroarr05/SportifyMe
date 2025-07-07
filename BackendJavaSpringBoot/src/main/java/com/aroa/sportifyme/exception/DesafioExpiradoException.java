@@ -5,11 +5,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST) // 400 Bad Request
 public class DesafioExpiradoException extends RuntimeException {
-    public DesafioExpiradoException(String message) {
-        super(message);
-    }
-
-    public DesafioExpiradoException(String message, Throwable cause) {
-        super(message, cause);
+    // Versión que acepta Long
+    public DesafioExpiradoException(Long desafioId) {
+        super(String.format("El desafío %d ya ha finalizado", desafioId));
     }
 }

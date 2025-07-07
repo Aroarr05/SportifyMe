@@ -1,8 +1,10 @@
 package com.aroa.sportifyme.servicio;
 
-import com.aroa.sportifyme.dto.ProgresoDTO;
+
 import com.aroa.sportifyme.dto.RankingDTO;
 import com.aroa.sportifyme.modelo.*;
+import com.aroa.sportifyme.repository.ProgresoRepository;
+import com.aroa.sportifyme.seguridad.dto.ProgresoDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,62 +17,64 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProgresoServicio {
 
-    private final ProgresoDAO progresoDAO;
+    private final ProgresoRepository progresoRepository;
     private final UsuarioServicio usuarioServicio;
     private final DesafioServicio desafioServicio;
     private final ParticipacionServicio participacionServicio;
 
     @Transactional
-    public Progreso registrarProgreso(ProgresoDTO progresoDTO, String usuarioEmail) {
-        // Validar que el usuario existe
-        Usuario usuario = usuarioServicio.buscarPorEmail(usuarioEmail)
+    public Progreso registrarProgreso(ProgresoDTO progresoDTO, String emailUsuario) {
+        Usuario usuario = usuarioServicio.buscarPorEmail(emailUsuario)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
-        // Validar que el desafío existe
-        Desafio desafio = desafioServicio.buscarPorId(progresoDTO.getDesafioId())
-                .orElseThrow(() -> new IllegalArgumentException("Desafío no encontrado"));
+        // Opción 1 (si DesafioServicio devuelve Optional):
+        Desafio desafio = desafioServicio.buscarPorId(progresoDTO.getDesafioId());
+        if (desafio == null) {
+            throw new IllegalArgumentException("Desafío no encontrado");
+        }
 
-        // Validar que el usuario está participando en el desafío
+        // Opción 2 (si DesafioServicio devuelve Desafio directamente):
+        // Desafio desafio = desafioServicio.buscarPorId(progresoDTO.getDesafioId());
+        // if (desafio == null) throw new IllegalArgumentException("Desafío no encontrado");
+
         if (!participacionServicio.usuarioParticipaEnDesafio(usuario.getId(), desafio.getId())) {
             throw new IllegalArgumentException("El usuario no está participando en este desafío");
         }
 
-        // Validar que el desafío no ha expirado
         if (LocalDateTime.now().isAfter(desafio.getFechaFin())) {
             throw new IllegalArgumentException("El desafío ya ha finalizado");
         }
 
-        // Crear y guardar el progreso
         Progreso progreso = new Progreso();
         progreso.setValorActual(progresoDTO.getValorActual());
+        progreso.setUnidad(progresoDTO.getUnidad());
         progreso.setComentario(progresoDTO.getComentario());
         progreso.setUsuario(usuario);
         progreso.setDesafio(desafio);
-        progreso.setFechaRegistro(LocalDateTime.now());
+        progreso.setDispositivo(progresoDTO.getDispositivo());
 
-        return progresoDAO.registrarProgreso(progreso);
+        return progresoRepository.save(progreso);
     }
 
+    @Transactional(readOnly = true)
     public List<Progreso> obtenerProgresosPorDesafio(Long desafioId) {
-        return progresoDAO.obtenerProgresosPorDesafio(desafioId);
+        return progresoRepository.findByDesafioIdWithUsuarioAndDesafio(desafioId);
     }
 
+    @Transactional(readOnly = true)
     public List<RankingDTO> generarRankingDesafio(Long desafioId) {
-        List<Progreso> progresos = progresoDAO.obtenerRankingDesafio(desafioId);
-
-        return progresos.stream()
-                .map(progreso -> {
-                    RankingDTO dto = new RankingDTO();
-                    dto.setUsuarioId(progreso.getUsuario().getId());
-                    dto.setNombreUsuario(progreso.getUsuario().getNombre());
-                    dto.setValorActual(progreso.getValorActual());
-                    // Puedes agregar más datos del usuario si es necesario
-                    return dto;
-                })
+        return progresoRepository.findRankingByDesafioId(desafioId).stream()
+                .map(progreso -> new RankingDTO(
+                        progreso.getUsuario().getId(),
+                        progreso.getUsuario().getNombre(),
+                        progreso.getValorActual(),
+                        progreso.getUsuario().getAvatarUrl()
+                ))
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public Optional<Progreso> buscarProgresoPorId(Long id) {
-        return progresoDAO.buscarPorId(id);
+        return progresoRepository.findByIdWithUsuarioAndDesafio(id);
     }
 }

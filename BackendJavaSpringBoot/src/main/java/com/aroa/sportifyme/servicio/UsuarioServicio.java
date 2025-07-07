@@ -21,7 +21,7 @@ public class UsuarioServicio implements UserDetailsService {
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByEmail(email)
+        Usuario usuario = buscarPorEmail(email)
                 .orElseThrow(() -> new UsuarioNoEncontradoException(email));
 
         return new User(
@@ -33,7 +33,7 @@ public class UsuarioServicio implements UserDetailsService {
 
     @Transactional
     public Usuario registrarUsuario(Usuario usuario) {
-        if (usuarioRepository.existsByEmail(usuario.getEmail())) {
+        if (existePorEmail(usuario.getEmail())) {
             throw new EmailYaRegistradoException(usuario.getEmail());
         }
 

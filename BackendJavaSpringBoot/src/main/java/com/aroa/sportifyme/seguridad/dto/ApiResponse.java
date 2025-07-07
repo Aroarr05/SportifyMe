@@ -1,4 +1,4 @@
-package com.aroa.sportifyme.dto; // Cambié el paquete a uno más genérico
+package com.aroa.sportifyme.seguridad.dto; // Cambié el paquete a uno más genérico
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

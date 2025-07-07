@@ -12,7 +12,7 @@ public class Progreso {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "valor_actual", nullable = false, precision = 10, scale = 2)
+    @Column(nullable = false, precision = 10, scale = 2)
     private Double valorActual;
 
     @Column(nullable = false, length = 20)
@@ -37,9 +37,12 @@ public class Progreso {
 
     @PrePersist
     @PreUpdate
-    private void validarUnidad() {
+    private void validar() {
         if (!this.unidad.equals(this.desafio.getUnidadObjetivo())) {
-            throw new IllegalArgumentException("La unidad del progreso no coincide con la del desafío");
+            throw new IllegalArgumentException("Unidad no coincide con el desafío");
+        }
+        if (this.valorActual <= 0) {
+            throw new IllegalArgumentException("El valor debe ser positivo");
         }
     }
 }
