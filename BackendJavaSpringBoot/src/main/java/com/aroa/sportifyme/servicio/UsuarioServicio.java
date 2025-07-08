@@ -43,9 +43,13 @@ public class UsuarioServicio implements UserDetailsService {
     }
 
     @Transactional(readOnly = true)
-    public Usuario buscarPorId(Long id) {
-        return usuarioRepository.findById(id)
-                .orElseThrow(() -> new UsuarioNoEncontradoException(id));
+    public Optional<Usuario> buscarPorId(Long id) {
+        return usuarioRepository.findById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean existePorId(Long id) {
+        return usuarioRepository.existsById(id);
     }
 
     @Transactional(readOnly = true)

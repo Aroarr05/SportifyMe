@@ -6,8 +6,10 @@ import com.aroa.sportifyme.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.*;
-import java.util.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +22,8 @@ public class DesafioServicio {
     public Desafio crearDesafio(Desafio desafio, Long creadorId) {
         validarDesafio(desafio);
 
-        Usuario creador = usuarioServicio.buscarPorId(creadorId);
+        Usuario creador = usuarioServicio.buscarPorId(creadorId)
+                .orElseThrow(() -> new UsuarioNoEncontradoException(creadorId));
         desafio.setCreador(creador);
 
         if (desafio.getEsPublico() == null) {
@@ -43,7 +46,8 @@ public class DesafioServicio {
 
     @Transactional(readOnly = true)
     public List<Desafio> listarPorCreador(Long creadorId) {
-        Usuario creador = usuarioServicio.buscarPorId(creadorId);
+        Usuario creador = usuarioServicio.buscarPorId(creadorId)
+                .orElseThrow(() -> new UsuarioNoEncontradoException(creadorId));
         return desafioRepository.findByCreadorOrderByFechaInicioDesc(creador);
     }
 
@@ -62,7 +66,8 @@ public class DesafioServicio {
         validarDesafio(desafioActualizado);
 
         Desafio desafioExistente = buscarPorId(id);
-        Usuario usuario = usuarioServicio.buscarPorId(usuarioId);
+        Usuario usuario = usuarioServicio.buscarPorId(usuarioId)
+                .orElseThrow(() -> new UsuarioNoEncontradoException(usuarioId));
 
         if (!tienePermisosParaModificar(desafioExistente, usuario)) {
             throw new AccesoNoAutorizadoException("actualizar", "desafío", id);
@@ -75,7 +80,8 @@ public class DesafioServicio {
     @Transactional
     public void eliminarDesafio(Long id, Long usuarioId) {
         Desafio desafio = buscarPorId(id);
-        Usuario usuario = usuarioServicio.buscarPorId(usuarioId);
+        Usuario usuario = usuarioServicio.buscarPorId(usuarioId)
+                .orElseThrow(() -> new UsuarioNoEncontradoException(usuarioId));
 
         if (!tienePermisosParaModificar(desafio, usuario)) {
             throw new AccesoNoAutorizadoException("eliminar", "desafío", id);

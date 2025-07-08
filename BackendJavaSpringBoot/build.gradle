@@ -27,6 +27,9 @@ dependencies {
     // Base de datos
     runtimeOnly 'com.mysql:mysql-connector-j'
 
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework:spring-messaging'
+
     // Lombok (getters/setters automáticos)
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

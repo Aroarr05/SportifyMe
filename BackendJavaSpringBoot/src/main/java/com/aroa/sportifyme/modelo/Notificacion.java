@@ -1,13 +1,29 @@
 package com.aroa.sportifyme.modelo;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 import java.time.LocalDateTime;
 
 @Data
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "notificaciones")
 public class Notificacion {
+
+    public boolean getLeida() {
+        return this.leida;
+    }
+
+    public void setLeida(boolean leida) {
+        this.leida = leida;
+    }
+
+    public enum TipoNotificacion {
+        LOGRO, COMENTARIO, PARTICIPACION, DESAFIO, SISTEMA
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,19 +43,11 @@ public class Notificacion {
     private String enlace;
 
     @Column(nullable = false)
-    private Boolean leida = false;
+    private boolean leida = false; // Valor por defecto
 
-    @Column(name = "fecha_creacion", nullable = false, updatable = false)
-    private LocalDateTime fechaCreacion = LocalDateTime.now();
+    @Column(name = "fecha_creacion", nullable = false)
+    private LocalDateTime fechaCreacion;
 
     @Column(name = "fecha_edicion")
     private LocalDateTime fechaEdicion;
-
-    public enum TipoNotificacion {
-        LOGRO,
-        COMENTARIO,
-        PROGRESO,
-        DESAFIO,
-        SISTEMA
-    }
 }

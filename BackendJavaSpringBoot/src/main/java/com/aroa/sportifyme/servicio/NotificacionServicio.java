@@ -1,12 +1,10 @@
 package com.aroa.sportifyme.servicio;
 
-import com.aroa.sportifyme.exception.RecursoNoEncontradoException;
-import com.aroa.sportifyme.modelo.Notificacion;
-import com.aroa.sportifyme.modelo.Usuario;
-import com.aroa.sportifyme.repository.NotificacionRepository;
+import com.aroa.sportifyme.exception.*;
+import com.aroa.sportifyme.modelo.*;
+import com.aroa.sportifyme.repository.*;
 import com.aroa.sportifyme.seguridad.dto.NotificacionDTO;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,15 +22,17 @@ public class NotificacionServicio {
 
     @Transactional
     public Notificacion crearNotificacion(Long usuarioId, String tipo, String mensaje, String enlace) {
-        Usuario usuario = usuarioServicio.buscarPorId(usuarioId);
+        Usuario usuario = usuarioServicio.buscarPorId(usuarioId)
+                .orElseThrow(() -> new UsuarioNoEncontradoException(usuarioId));
 
-        Notificacion notificacion = new Notificacion();
-        notificacion.setUsuario(usuario);
-        notificacion.setTipo(Notificacion.TipoNotificacion.valueOf(tipo));
-        notificacion.setMensaje(mensaje);
-        notificacion.setEnlace(enlace);
-        notificacion.setLeida(false);
-        notificacion.setFechaCreacion(LocalDateTime.now());
+        Notificacion notificacion = Notificacion.builder()
+                .usuario(usuario)
+                .tipo(Notificacion.TipoNotificacion.valueOf(tipo))
+                .mensaje(mensaje)
+                .enlace(enlace)
+                .leida(false)
+                .fechaCreacion(LocalDateTime.now())
+                .build();
 
         Notificacion guardada = notificacionRepository.save(notificacion);
         enviarNotificacionEnTiempoReal(guardada);
@@ -41,6 +41,10 @@ public class NotificacionServicio {
 
     @Transactional(readOnly = true)
     public List<Notificacion> obtenerNotificacionesUsuario(Long usuarioId, boolean noLeidas) {
+        if (!usuarioServicio.existePorId(usuarioId)) {
+            throw new UsuarioNoEncontradoException(usuarioId);
+        }
+
         return noLeidas
                 ? notificacionRepository.findByUsuarioIdAndLeidaFalseOrderByFechaCreacionDesc(usuarioId)
                 : notificacionRepository.findByUsuarioIdOrderByFechaCreacionDesc(usuarioId);
@@ -49,22 +53,23 @@ public class NotificacionServicio {
     @Transactional(readOnly = true)
     public Notificacion obtenerNotificacionPorIdYUsuario(Long id, Long usuarioId) {
         return notificacionRepository.findByIdAndUsuarioId(id, usuarioId)
-                .orElseThrow(() -> new RecursoNoEncontradoException("Notificación no encontrada"));
+                .orElseThrow(() -> new NotificacionNoEncontradaException(id, usuarioId));
     }
 
     @Transactional
-    public void marcarComoLeida(Long notificacionId, Long usuarioId) {
+    public Notificacion marcarComoLeida(Long notificacionId, Long usuarioId) {
         Notificacion notificacion = obtenerNotificacionPorIdYUsuario(notificacionId, usuarioId);
         if (!notificacion.getLeida()) {
             notificacion.setLeida(true);
             notificacion.setFechaEdicion(LocalDateTime.now());
-            notificacionRepository.save(notificacion);
+            return notificacionRepository.save(notificacion);
         }
+        return notificacion;
     }
 
     @Transactional
-    public void marcarTodasComoLeidas(Long usuarioId) {
-        notificacionRepository.marcarTodasComoLeidas(usuarioId, LocalDateTime.now());
+    public int marcarTodasComoLeidas(Long usuarioId) {
+        return notificacionRepository.marcarTodasComoLeidas(usuarioId, LocalDateTime.now());
     }
 
     @Transactional
@@ -75,11 +80,17 @@ public class NotificacionServicio {
 
     @Transactional(readOnly = true)
     public long contarNotificacionesUsuario(Long usuarioId) {
+        if (!usuarioServicio.existePorId(usuarioId)) {
+            throw new UsuarioNoEncontradoException(usuarioId);
+        }
         return notificacionRepository.countByUsuarioId(usuarioId);
     }
 
     @Transactional(readOnly = true)
     public long contarNotificacionesNoLeidasUsuario(Long usuarioId) {
+        if (!usuarioServicio.existePorId(usuarioId)) {
+            throw new UsuarioNoEncontradoException(usuarioId);
+        }
         return notificacionRepository.countByUsuarioIdAndLeidaFalse(usuarioId);
     }
 

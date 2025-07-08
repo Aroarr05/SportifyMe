@@ -1,11 +1,14 @@
 package com.aroa.sportifyme.modelo;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 import java.time.LocalDateTime;
 
 @Data
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "participaciones")
 public class Participacion {
     @Id
@@ -21,5 +24,6 @@ public class Participacion {
     private Desafio desafio;
 
     @Column(name = "fecha_union", nullable = false)
+    @Builder.Default
     private LocalDateTime fechaUnion = LocalDateTime.now();
 }

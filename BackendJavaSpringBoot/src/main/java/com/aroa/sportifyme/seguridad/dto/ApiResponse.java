@@ -1,4 +1,4 @@
-package com.aroa.sportifyme.seguridad.dto; // Cambié el paquete a uno más genérico
+package com.aroa.sportifyme.seguridad.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,18 +7,16 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApiResponse {
+public class ApiResponse<T> {
     private boolean success;
     private String message;
-    private Object data;
+    private T data;
 
-    // Método estático para respuestas exitosas
-    public static ApiResponse success(String message, Object data) {
-        return new ApiResponse(true, message, data);
+    public static <T> ApiResponse<T> success(String message, T data) {
+        return new ApiResponse<>(true, message, data);
     }
 
-    // Método estático para respuestas de error
-    public static ApiResponse error(String message) {
-        return new ApiResponse(false, message, null);
+    public static <T> ApiResponse<T> error(String message) {
+        return new ApiResponse<>(false, message, null);
     }
 }

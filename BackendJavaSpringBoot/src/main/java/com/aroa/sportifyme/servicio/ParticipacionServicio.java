@@ -24,20 +24,16 @@ public class ParticipacionServicio {
         Usuario usuario = usuarioServicio.buscarPorEmail(emailUsuario)
                 .orElseThrow(() -> new UsuarioNoEncontradoException(emailUsuario));
 
-        Desafio desafio = desafioServicio.buscarPorId(desafioId)
-                .orElseThrow(() -> new DesafioNoEncontradoException(desafioId));
-
+        Desafio desafio = desafioServicio.buscarPorId(desafioId);
         validarParticipacion(usuario, desafio);
 
-        Participacion participacion = new Participacion();
-        participacion.setUsuario(usuario);
-        participacion.setDesafio(desafio);
-        participacion.setFechaUnion(LocalDateTime.now());
+        // Uso correcto del Builder
+        Participacion participacion = Participacion.builder()
+                .usuario(usuario)
+                .desafio(desafio)
+                .build();
 
-        Participacion participacionGuardada = participacionRepository.save(participacion);
-        notificarNuevaParticipacion(desafio, usuario);
-
-        return participacionGuardada;
+        return participacionRepository.save(participacion);
     }
 
     @Transactional
@@ -92,10 +88,7 @@ public class ParticipacionServicio {
 
         if (desafio.getMaxParticipantes() != null &&
                 contarParticipantesPorDesafio(desafio.getId()) >= desafio.getMaxParticipantes()) {
-            throw new LimiteParticipantesException(
-                    desafio.getId(),
-                    desafio.getMaxParticipantes() // Usar int directamente
-            );
+            throw new LimiteParticipantesException(desafio.getId(), desafio.getMaxParticipantes());
         }
     }
 
