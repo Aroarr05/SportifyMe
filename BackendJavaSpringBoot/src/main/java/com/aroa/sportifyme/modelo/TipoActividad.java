@@ -1,4 +1,3 @@
-// Archivo: TipoActividad.java
 package com.aroa.sportifyme.modelo;
 
 public enum TipoActividad {

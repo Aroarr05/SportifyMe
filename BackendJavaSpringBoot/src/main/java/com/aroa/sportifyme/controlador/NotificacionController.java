@@ -1,4 +1,4 @@
-package com.aroa.sportifyme.controller;
+package com.aroa.sportifyme.controlador;
 
 import com.aroa.sportifyme.modelo.Notificacion;
 import com.aroa.sportifyme.seguridad.dto.NotificacionDTO;

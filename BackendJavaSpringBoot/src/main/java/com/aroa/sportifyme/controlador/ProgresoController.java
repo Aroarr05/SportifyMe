@@ -1,6 +1,5 @@
 package com.aroa.sportifyme.controlador;
 
-
 import com.aroa.sportifyme.dto.RankingDTO;
 import com.aroa.sportifyme.exception.BusinessException;
 import com.aroa.sportifyme.modelo.Progreso;

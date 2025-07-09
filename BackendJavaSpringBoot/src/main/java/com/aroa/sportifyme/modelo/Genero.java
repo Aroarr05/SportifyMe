@@ -1,4 +1,3 @@
-// Archivo: Genero.java
 package com.aroa.sportifyme.modelo;
 
 public enum Genero {

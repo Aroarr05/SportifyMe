@@ -1,6 +1,5 @@
 package com.aroa.sportifyme.controlador;
 
-
 import com.aroa.sportifyme.modelo.Usuario;
 import com.aroa.sportifyme.seguridad.dto.UsuarioRegistroDTO;
 import com.aroa.sportifyme.servicio.UsuarioServicio;
@@ -8,8 +7,6 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-
 
 @RestController
 @RequestMapping("/api/usuarios")

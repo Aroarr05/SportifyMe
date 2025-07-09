@@ -49,11 +49,21 @@ public class ParticipacionServicio {
         notificarAbandonoDesafio(participacion.getDesafio(), usuario);
     }
 
-    // Métodos de consulta
     @Transactional(readOnly = true)
     public Participacion findById(Long id) {
         return participacionRepository.findById(id)
-                .orElseThrow(() -> new ParticipacionNoEncontradaException(id));
+                .orElseThrow(() -> {
+                    // Si necesitas los dos parámetros, pero solo tienes el ID de participación:
+                    Participacion participacion = participacionRepository.findById(id).orElse(null);
+                    if (participacion != null) {
+                        return new ParticipacionNoEncontradaException(
+                                participacion.getUsuario().getId(),
+                                participacion.getDesafio().getId()
+                        );
+                    } else {
+                        return new ParticipacionNoEncontradaException(null, null); // O un mensaje genérico
+                    }
+                });
     }
 
     @Transactional(readOnly = true)

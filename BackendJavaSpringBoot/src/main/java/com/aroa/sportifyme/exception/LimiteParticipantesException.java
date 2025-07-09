@@ -3,7 +3,7 @@ package com.aroa.sportifyme.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.FORBIDDEN) // 403 Forbidden
+@ResponseStatus(HttpStatus.FORBIDDEN)
 public class LimiteParticipantesException extends RuntimeException {
     // Versión que acepta Long e Integer
     public LimiteParticipantesException(Long desafioId, Integer maxParticipantes) {
