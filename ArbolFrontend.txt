@@ -1,0 +1,29 @@
+sportify-me-frontend/
+├── src/
+│   ├── app/
+│   │   ├── auth/                      # Componentes de autenticación
+│   │   │   ├── login/
+│   │   │   ├── registro/
+│   │   │   └── auth.service.ts        # Servicio para llamadas al backend
+│   │   │
+│   │   ├── desafios/                  # Módulo de desafíos
+│   │   │   ├── lista-desafios/        # Componente para listar
+│   │   │   ├── crear-desafio/         # Componente para crear
+│   │   │   └── desafio.service.ts     # Servicio de desafíos
+│   │   │
+│   │   ├── participaciones/           # Lógica de participación
+│   │   ├── progresos/                 # Seguimiento de progresos
+│   │   ├── shared/                    # Componentes/compartidos
+│   │   │   ├── interfaces/            # Interfaces (ej: Desafio, Usuario)
+│   │   │   ├── guards/                # Guards de autenticación
+│   │   │   └── interceptors/          # Interceptores (ej: JWT)
+│   │   │
+│   │   ├── app.component.ts           # Componente raíz
+│   │   └── app.module.ts              # Módulo principal
+│   │
+│   ├── assets/                        # Imágenes/estáticos
+│   ├── environments/                  # Configuración de entornos
+│   └── styles/                        # Estilos globales
+│
+├── angular.json                       # Configuración del proyecto
+└── package.json                       # Dependencias
