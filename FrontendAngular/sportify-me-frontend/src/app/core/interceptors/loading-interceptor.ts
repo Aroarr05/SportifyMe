@@ -1,5 +1,5 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 
-export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
+export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req);
 };

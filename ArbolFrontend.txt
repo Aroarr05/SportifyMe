@@ -1,29 +1,76 @@
 sportify-me-frontend/
 ├── src/
 │   ├── app/
-│   │   ├── auth/                      # Componentes de autenticación
-│   │   │   ├── login/
-│   │   │   ├── registro/
-│   │   │   └── auth.service.ts        # Servicio para llamadas al backend
+│   │   ├── auth/
+│   │   │   ├── components/
+│   │   │   │   ├── login/
+│   │   │   │   │   ├── login.component.ts
+│   │   │   │   │   ├── login.component.html
+│   │   │   │   │   └── login.component.scss
+│   │   │   │   └── registro/
+│   │   │   │       ├── registro.component.ts
+│   │   │   │       ├── registro.component.html
+│   │   │   │       └── registro.component.scss
+│   │   │   ├── services/
+│   │   │   │   └── auth.service.ts
+│   │   │   └── auth.module.ts
 │   │   │
-│   │   ├── desafios/                  # Módulo de desafíos
-│   │   │   ├── lista-desafios/        # Componente para listar
-│   │   │   ├── crear-desafio/         # Componente para crear
-│   │   │   └── desafio.service.ts     # Servicio de desafíos
+│   │   ├── core/
+│   │   │   ├── interceptors/
+│   │   │   │   ├── auth.interceptor.ts
+│   │   │   │   └── error.interceptor.ts
+│   │   │   ├── guards/
+│   │   │   │   └── auth.guard.ts
+│   │   │   └── core.module.ts
 │   │   │
-│   │   ├── participaciones/           # Lógica de participación
-│   │   ├── progresos/                 # Seguimiento de progresos
-│   │   ├── shared/                    # Componentes/compartidos
-│   │   │   ├── interfaces/            # Interfaces (ej: Desafio, Usuario)
-│   │   │   ├── guards/                # Guards de autenticación
-│   │   │   └── interceptors/          # Interceptores (ej: JWT)
+│   │   ├── desafios/
+│   │   │   ├── components/
+│   │   │   │   ├── lista-desafios/
+│   │   │   │   ├── crear-desafio/
+│   │   │   │   └── detalle-desafio/
+│   │   │   ├── services/
+│   │   │   │   └── desafios.service.ts
+│   │   │   └── desafios.module.ts
 │   │   │
-│   │   ├── app.component.ts           # Componente raíz
-│   │   └── app.module.ts              # Módulo principal
+│   │   ├── progresos/
+│   │   │   ├── components/
+│   │   │   │   ├── registrar-progreso/
+│   │   │   │   └── mis-progresos/
+│   │   │   ├── services/
+│   │   │   │   └── progresos.service.ts
+│   │   │   └── progresos.module.ts
+│   │   │
+│   │   ├── rankings/
+│   │   │   ├── components/
+│   │   │   │   └── ranking-global/
+│   │   │   ├── services/
+│   │   │   │   └── rankings.service.ts
+│   │   │   └── rankings.module.ts
+│   │   │
+│   │   ├── shared/
+│   │   │   ├── components/
+│   │   │   │   ├── navbar/
+│   │   │   │   ├── loading-spinner/
+│   │   │   │   └── error-alert/
+│   │   │   ├── models/
+│   │   │   │   ├── desafio.model.ts
+│   │   │   │   ├── usuario.model.ts
+│   │   │   │   └── progreso.model.ts
+│   │   │   └── shared.module.ts
+│   │   │
+│   │   ├── app-routing.module.ts
+│   │   ├── app.component.ts
+│   │   ├── app.component.html
+│   │   ├── app.component.scss
+│   │   └── app.module.ts
 │   │
-│   ├── assets/                        # Imágenes/estáticos
-│   ├── environments/                  # Configuración de entornos
-│   └── styles/                        # Estilos globales
+│   ├── assets/
+│   ├── environments/
+│   │   ├── environment.ts
+│   │   └── environment.prod.ts
+│   └── styles/
+│       └── styles.scss
 │
-├── angular.json                       # Configuración del proyecto
-└── package.json                       # Dependencias
+├── angular.json
+├── package.json
+└── tsconfig.json
