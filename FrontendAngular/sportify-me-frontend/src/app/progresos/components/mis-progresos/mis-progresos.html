@@ -1,1 +1,54 @@
-<p>mis-progresos works!</p>
+<div class="container mt-4">
+  <h2>Mis Progresos</h2>
+  
+  <div class="row">
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <div class="card-header bg-info text-white">
+          <h5>Resumen</h5>
+        </div>
+        <div class="card-body">
+          <p><strong>Desafíos activos:</strong> {{ resumen?.desafiosActivos || 0 }}</p>
+          <p><strong>Desafíos completados:</strong> {{ resumen?.desafiosCompletados || 0 }}</p>
+          <p><strong>Total progresos:</strong> {{ resumen?.totalProgresos || 0 }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="mb-4" *ngFor="let item of progresosPorDesafio">
+    <div class="card">
+      <div class="card-header bg-primary text-white">
+        <h4>{{ item.desafio.nombre }}</h4>
+      </div>
+      <div class="card-body">
+        <p>{{ item.desafio.objetivo }}</p>
+        
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Progreso</th>
+                <th>Comentario</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let progreso of item.progresos">
+                <td>{{ progreso.fecha | date }}</td>
+                <td>{{ progreso.valor }} {{ progreso.unidad }}</td>
+                <td>{{ progreso.comentario || '-' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="progress mt-3">
+          <div class="progress-bar bg-success" role="progressbar" [style.width]="item.porcentajeCompletado + '%'">
+            {{ item.porcentajeCompletado }}% completado
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

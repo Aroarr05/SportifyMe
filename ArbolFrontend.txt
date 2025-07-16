@@ -13,7 +13,7 @@ sportify-me-frontend/
 │   │   │   │       └── registro.component.scss
 │   │   │   ├── services/
 │   │   │   │   └── auth.service.ts
-│   │   │   └── auth.module.ts
+│   │   │   └── auth-module.ts
 │   │   │
 │   │   ├── core/
 │   │   │   ├── interceptors/
@@ -21,7 +21,7 @@ sportify-me-frontend/
 │   │   │   │   └── error.interceptor.ts
 │   │   │   ├── guards/
 │   │   │   │   └── auth.guard.ts
-│   │   │   └── core.module.ts
+│   │   │   └── core-module.ts
 │   │   │
 │   │   ├── desafios/
 │   │   │   ├── components/
@@ -30,7 +30,7 @@ sportify-me-frontend/
 │   │   │   │   └── detalle-desafio/
 │   │   │   ├── services/
 │   │   │   │   └── desafios.service.ts
-│   │   │   └── desafios.module.ts
+│   │   │   └── desafios-module.ts
 │   │   │
 │   │   ├── progresos/
 │   │   │   ├── components/
@@ -38,14 +38,14 @@ sportify-me-frontend/
 │   │   │   │   └── mis-progresos/
 │   │   │   ├── services/
 │   │   │   │   └── progresos.service.ts
-│   │   │   └── progresos.module.ts
+│   │   │   └── progresos-module.ts
 │   │   │
 │   │   ├── rankings/
 │   │   │   ├── components/
 │   │   │   │   └── ranking-global/
 │   │   │   ├── services/
 │   │   │   │   └── rankings.service.ts
-│   │   │   └── rankings.module.ts
+│   │   │   └── rankings-module.ts
 │   │   │
 │   │   ├── shared/
 │   │   │   ├── components/
@@ -56,13 +56,13 @@ sportify-me-frontend/
 │   │   │   │   ├── desafio.model.ts
 │   │   │   │   ├── usuario.model.ts
 │   │   │   │   └── progreso.model.ts
-│   │   │   └── shared.module.ts
+│   │   │   └── shared-module.ts
 │   │   │
 │   │   ├── app-routing.module.ts
 │   │   ├── app.component.ts
 │   │   ├── app.component.html
 │   │   ├── app.component.scss
-│   │   └── app.module.ts
+│   │   └── app-module.ts
 │   │
 │   ├── assets/
 │   ├── environments/

@@ -1,1 +1,85 @@
-<p>detalle-desafio works!</p>
+<div class="container mt-4" *ngIf="desafio">
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+          <h2>{{ desafio.nombre }}</h2>
+        </div>
+        <div class="card-body">
+          <p class="lead">{{ desafio.descripcion }}</p>
+          <ul class="list-group list-group-flush mb-3">
+            <li class="list-group-item">
+              <strong>Tipo de actividad:</strong> {{ desafio.tipoActividad }}
+            </li>
+            <li class="list-group-item">
+              <strong>Objetivo:</strong> {{ desafio.objetivo }}
+            </li>
+            <li class="list-group-item">
+              <strong>Fecha límite:</strong> {{ desafio.fechaLimite | date }}
+            </li>
+            <li class="list-group-item">
+              <strong>Participantes:</strong> {{ desafio.participantes?.length || 0 }}
+            </li>
+          </ul>
+          
+          <button *ngIf="!yaParticipando" class="btn btn-success me-2" (click)="unirseAlDesafio()">
+            Unirse al Desafío
+          </button>
+          <button *ngIf="yaParticipando" class="btn btn-outline-secondary me-2" disabled>
+            Ya estás participando
+          </button>
+          <button class="btn btn-info" routerLink="/registrar-progreso/{{desafio.id}}">
+            Registrar Progreso
+          </button>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+          <h4>Ranking de Participantes</h4>
+        </div>
+        <div class="card-body">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Posición</th>
+                <th>Nombre</th>
+                <th>Progreso</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let participante of ranking; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ participante.usuario.nombre }}</td>
+                <td>{{ participante.progreso }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header bg-secondary text-white">
+          <h4>Comentarios</h4>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <textarea class="form-control" [(ngModel)]="nuevoComentario" placeholder="Escribe un comentario..."></textarea>
+            <button class="btn btn-primary mt-2" (click)="agregarComentario()">Enviar</button>
+          </div>
+          <div class="list-group">
+            <div *ngFor="let comentario of comentarios" class="list-group-item">
+              <div class="d-flex w-100 justify-content-between">
+                <h6 class="mb-1">{{ comentario.usuario.nombre }}</h6>
+                <small>{{ comentario.fecha | date:'short' }}</small>
+              </div>
+              <p class="mb-1">{{ comentario.texto }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

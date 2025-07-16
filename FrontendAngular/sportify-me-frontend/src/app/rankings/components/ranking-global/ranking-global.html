@@ -1,1 +1,44 @@
-<p>ranking-global works!</p>
+<div class="container mt-4">
+  <h2>Ranking Global</h2>
+  
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="input-group">
+        <span class="input-group-text">Filtrar por</span>
+        <select class="form-select" [(ngModel)]="filtroTipo" (change)="cargarRanking()">
+          <option value="todos">Todos los desafíos</option>
+          <option value="Carrera">Carrera</option>
+          <option value="Ciclismo">Ciclismo</option>
+          <option value="Natación">Natación</option>
+          <option value="Gimnasio">Gimnasio</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  
+  <div class="card">
+    <div class="card-header bg-warning text-white">
+      <h4>Top Participantes</h4>
+    </div>
+    <div class="card-body">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Posición</th>
+            <th>Nombre</th>
+            <th>Puntos</th>
+            <th>Desafíos Completados</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let participante of ranking; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ participante.usuario.nombre }}</td>
+            <td>{{ participante.puntos }}</td>
+            <td>{{ participante.desafiosCompletados }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

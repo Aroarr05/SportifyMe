@@ -1,1 +1,45 @@
-<p>crear-desafio works!</p>
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header bg-warning text-white">
+          <h3 class="text-center">Crear Nuevo Desafío</h3>
+        </div>
+        <div class="card-body">
+          <form (ngSubmit)="onSubmit()">
+            <div class="form-group mb-3">
+              <label for="nombre">Nombre del Desafío</label>
+              <input type="text" class="form-control" id="nombre" [(ngModel)]="desafio.nombre" name="nombre" required>
+            </div>
+            <div class="form-group mb-3">
+              <label for="descripcion">Descripción</label>
+              <textarea class="form-control" id="descripcion" [(ngModel)]="desafio.descripcion" name="descripcion" rows="3" required></textarea>
+            </div>
+            <div class="form-group mb-3">
+              <label for="tipoActividad">Tipo de Actividad</label>
+              <select class="form-select" id="tipoActividad" [(ngModel)]="desafio.tipoActividad" name="tipoActividad" required>
+                <option value="Carrera">Carrera</option>
+                <option value="Ciclismo">Ciclismo</option>
+                <option value="Natación">Natación</option>
+                <option value="Gimnasio">Gimnasio</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+            <div class="form-group mb-3">
+              <label for="objetivo">Objetivo</label>
+              <input type="text" class="form-control" id="objetivo" [(ngModel)]="desafio.objetivo" name="objetivo" placeholder="Ej: Correr 5 km en menos de 30 minutos" required>
+            </div>
+            <div class="form-group mb-3">
+              <label for="fechaLimite">Fecha Límite</label>
+              <input type="date" class="form-control" id="fechaLimite" [(ngModel)]="desafio.fechaLimite" name="fechaLimite" required>
+            </div>
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-warning">Crear Desafío</button>
+              <button type="button" class="btn btn-outline-secondary" routerLink="/desafios">Cancelar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
