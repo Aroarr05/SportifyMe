@@ -26,8 +26,17 @@ sportify-me-frontend/
 │   │   ├── desafios/
 │   │   │   ├── components/
 │   │   │   │   ├── lista-desafios/
+│   │   │   │   │   ├── lista-desafios.component.ts
+│   │   │   │   │   ├── lista-desafios.component.html
+│   │   │   │   │   └── lista-desafios.component.scss
 │   │   │   │   ├── crear-desafio/
+│   │   │   │   │   ├── crear-desafio.component.ts
+│   │   │   │   │   ├── crear-desafio.component.html
+│   │   │   │   │   └── crear-desafio.component.scss
 │   │   │   │   └── detalle-desafio/
+│   │   │   │       ├── detalle-desafio.component.ts
+│   │   │   │       ├── detalle-desafio.component.html
+│   │   │   │       └── detalle-desafio.component.scss
 │   │   │   ├── services/
 │   │   │   │   └── desafios.service.ts
 │   │   │   └── desafios-module.ts
@@ -35,7 +44,13 @@ sportify-me-frontend/
 │   │   ├── progresos/
 │   │   │   ├── components/
 │   │   │   │   ├── registrar-progreso/
+│   │   │   │   │   ├── registrar-progreso.component.ts
+│   │   │   │   │   ├── registrar-progreso.component.html
+│   │   │   │   │   └── registrar-progreso.component.scss
 │   │   │   │   └── mis-progresos/
+│   │   │   │       ├── mis-progresos.component.ts
+│   │   │   │       ├── mis-progresos.component.html
+│   │   │   │       └── mis-progresos.component.scss
 │   │   │   ├── services/
 │   │   │   │   └── progresos.service.ts
 │   │   │   └── progresos-module.ts
@@ -43,6 +58,9 @@ sportify-me-frontend/
 │   │   ├── rankings/
 │   │   │   ├── components/
 │   │   │   │   └── ranking-global/
+│   │   │   │       ├── ranking-global.component.ts
+│   │   │   │       ├── ranking-global.component.html
+│   │   │   │       └── ranking-global.component.scss
 │   │   │   ├── services/
 │   │   │   │   └── rankings.service.ts
 │   │   │   └── rankings-module.ts
@@ -50,12 +68,27 @@ sportify-me-frontend/
 │   │   ├── shared/
 │   │   │   ├── components/
 │   │   │   │   ├── navbar/
+│   │   │   │   │   ├── navbar.component.ts
+│   │   │   │   │   ├── navbar.component.html
+│   │   │   │   │   └── navbar.component.scss
 │   │   │   │   ├── loading-spinner/
+│   │   │   │   │   ├── loading-spinner.component.ts
+│   │   │   │   │   ├── loading-spinner.component.html
+│   │   │   │   │   └── loading-spinner.component.scss
 │   │   │   │   └── error-alert/
+│   │   │   │       ├── error-alert.component.ts
+│   │   │   │       ├── error-alert.component.html
+│   │   │   │       └── error-alert.component.scss
 │   │   │   ├── models/
 │   │   │   │   ├── desafio.model.ts
 │   │   │   │   ├── usuario.model.ts
-│   │   │   │   └── progreso.model.ts
+│   │   │   │   ├── progreso.model.ts
+│   │   │   │   ├── comentario.model.ts
+│   │   │   │   ├── ranking.model.ts
+│   │   │   │   ├── paged-response.model.ts
+│   │   │   │   └── index.ts
+│   │   │   ├── utils/
+│   │   │   │   └── date-utils.service.ts
 │   │   │   └── shared-module.ts
 │   │   │
 │   │   ├── app-routing.module.ts
@@ -65,6 +98,8 @@ sportify-me-frontend/
 │   │   └── app-module.ts
 │   │
 │   ├── assets/
+│   │   ├── images/
+│   │   └── locales/
 │   ├── environments/
 │   │   ├── environment.ts
 │   │   └── environment.prod.ts
@@ -73,4 +108,5 @@ sportify-me-frontend/
 │
 ├── angular.json
 ├── package.json
-└── tsconfig.json
+├── tsconfig.json
+└── tailwind.config.js
