@@ -9,7 +9,7 @@ export interface Desafio {
   tipoActividad: TipoActividad;
   objetivo: string;
   fechaCreacion: Date;
-  fechaLimite: Date;
+  fechaLimite: Date | string;
   creador: Usuario | number; // Puede ser el objeto completo o solo el ID
   participantes?: Usuario[] | number[]; // Array de usuarios o IDs
   progresos?: Progreso[];

@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { DesafiosService } from '../../services/desafios.service';
 import { ActivatedRoute } from '@angular/router';
-import { Desafio } from '../../shared/models/desafio.model';
-import { AuthService } from '../../../auth/services/auth.service';
+import { Desafio } from '../../../shared/models';
+import { AuthService } from '../../../auth/auth-module';
 
 @Component({
   selector: 'app-detalle-desafio',

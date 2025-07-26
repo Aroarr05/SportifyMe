@@ -1,45 +1,71 @@
 <div class="container mt-4">
-  <div class="row justify-content-center">
-    <div class="col-md-8">
-      <div class="card">
-        <div class="card-header bg-warning text-white">
-          <h3 class="text-center">Crear Nuevo Desafío</h3>
-        </div>
-        <div class="card-body">
-          <form (ngSubmit)="onSubmit()">
-            <div class="form-group mb-3">
-              <label for="nombre">Nombre del Desafío</label>
-              <input type="text" class="form-control" id="nombre" [(ngModel)]="desafio.nombre" name="nombre" required>
-            </div>
-            <div class="form-group mb-3">
-              <label for="descripcion">Descripción</label>
-              <textarea class="form-control" id="descripcion" [(ngModel)]="desafio.descripcion" name="descripcion" rows="3" required></textarea>
-            </div>
-            <div class="form-group mb-3">
-              <label for="tipoActividad">Tipo de Actividad</label>
-              <select class="form-select" id="tipoActividad" [(ngModel)]="desafio.tipoActividad" name="tipoActividad" required>
-                <option value="Carrera">Carrera</option>
-                <option value="Ciclismo">Ciclismo</option>
-                <option value="Natación">Natación</option>
-                <option value="Gimnasio">Gimnasio</option>
-                <option value="Otro">Otro</option>
-              </select>
-            </div>
-            <div class="form-group mb-3">
-              <label for="objetivo">Objetivo</label>
-              <input type="text" class="form-control" id="objetivo" [(ngModel)]="desafio.objetivo" name="objetivo" placeholder="Ej: Correr 5 km en menos de 30 minutos" required>
-            </div>
-            <div class="form-group mb-3">
-              <label for="fechaLimite">Fecha Límite</label>
-              <input type="date" class="form-control" id="fechaLimite" [(ngModel)]="desafio.fechaLimite" name="fechaLimite" required>
-            </div>
-            <div class="d-grid gap-2">
-              <button type="submit" class="btn btn-warning">Crear Desafío</button>
-              <button type="button" class="btn btn-outline-secondary" routerLink="/desafios">Cancelar</button>
-            </div>
-          </form>
-        </div>
+  <h2 class="mb-4">Crear Nuevo Desafío Deportivo</h2>
+  
+  <form #desafioForm="ngForm" (ngSubmit)="onSubmit(desafioForm)" class="needs-validation" novalidate>
+    <!-- Nombre -->
+    <div class="mb-3">
+      <label for="nombre" class="form-label">Nombre del Desafío</label>
+      <input type="text" class="form-control" id="nombre" 
+             [(ngModel)]="desafio.nombre" name="nombre" 
+             required minlength="5" maxlength="100"
+             #nombre="ngModel">
+      <div *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)" class="text-danger">
+        <small *ngIf="nombre.errors?.['required']">El nombre es obligatorio</small>
+        <small *ngIf="nombre.errors?.['minlength']">Mínimo 5 caracteres</small>
       </div>
     </div>
-  </div>
+
+    <!-- Descripción -->
+    <div class="mb-3">
+      <label for="descripcion" class="form-label">Descripción</label>
+      <textarea class="form-control" id="descripcion" rows="3"
+                [(ngModel)]="desafio.descripcion" name="descripcion"
+                required #descripcion="ngModel"></textarea>
+      <div *ngIf="descripcion.invalid && (descripcion.dirty || descripcion.touched)" class="text-danger">
+        <small>La descripción es obligatoria</small>
+      </div>
+    </div>
+
+    <!-- Tipo de Actividad -->
+    <div class="mb-3">
+      <label for="tipoActividad" class="form-label">Tipo de Actividad</label>
+      <select class="form-select" id="tipoActividad"
+              [(ngModel)]="desafio.tipoActividad" name="tipoActividad"
+              required #tipoActividad="ngModel">
+        <option *ngFor="let tipo of tiposActividad" [value]="tipo">
+          {{ tipo | titlecase }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Objetivo -->
+    <div class="mb-3">
+      <label for="objetivo" class="form-label">Objetivo</label>
+      <input type="text" class="form-control" id="objetivo"
+             [(ngModel)]="desafio.objetivo" name="objetivo"
+             required #objetivo="ngModel">
+      <div class="form-text">Ejemplo: "Correr 5 km en menos de 30 minutos"</div>
+    </div>
+
+    <!-- Fecha Límite -->
+    <div class="mb-4">
+      <label for="fechaLimite" class="form-label">Fecha Límite</label>
+      <input type="date" class="form-control" id="fechaLimite"
+             [(ngModel)]="desafio.fechaLimite" name="fechaLimite"
+             required min="{{ minDate }}" #fechaLimite="ngModel">
+      <div *ngIf="fechaLimite.errors?.['min']" class="text-danger">
+        <small>La fecha no puede ser anterior a hoy</small>
+      </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="d-flex justify-content-between">
+      <button type="button" class="btn btn-outline-secondary" (click)="router.navigate(['/desafios'])">
+        Cancelar
+      </button>
+      <button type="submit" class="btn btn-primary" [disabled]="desafioForm.invalid">
+        Crear Desafío
+      </button>
+    </div>
+  </form>
 </div>
