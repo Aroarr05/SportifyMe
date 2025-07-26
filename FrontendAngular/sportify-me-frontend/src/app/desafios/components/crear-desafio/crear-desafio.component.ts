@@ -6,9 +6,8 @@ import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-crear-desafio',
-  imports:[],
   templateUrl: './crear-desafio.component.html',
-  styleUrls: ['./crear-desafio.component.scss']
+  styleUrls: ['./crear-desafio.component.scss']  // Nota la ruta relativa correcta
 })
 
 export class CrearDesafioComponent {

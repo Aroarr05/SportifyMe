@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AuthService } from '.../services/auth.service';
+import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
   templateUrl: './registro.component.html',
   styleUrls: ['./registro.component.scss']
 })
+
 export class RegistroComponent {
   user = {
     nombre: '',

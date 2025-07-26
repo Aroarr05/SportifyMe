@@ -2,13 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { DesafiosService } from '../../services/desafios.service';
 import { ActivatedRoute } from '@angular/router';
 import { Desafio } from '../../../shared/models';
-import { AuthService } from '../../../auth/auth-module';
+import { AuthService } from '../../../auth/auth.module';
 
 @Component({
   selector: 'app-detalle-desafio',
   templateUrl: './detalle-desafio.component.html',
   styleUrls: ['./detalle-desafio.component.scss']
 })
+
 export class DetalleDesafioComponent implements OnInit {
   desafio?: Desafio;
   ranking: any[] = [];
