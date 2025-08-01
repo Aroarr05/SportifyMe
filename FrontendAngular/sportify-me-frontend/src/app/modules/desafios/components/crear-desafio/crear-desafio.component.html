@@ -1,0 +1,74 @@
+<div class="container mt-4">
+  <h2 class="mb-4">Crear Nuevo Desafío Deportivo</h2>
+  
+  <form [formGroup]="desafioForm" (ngSubmit)="onSubmit()" class="needs-validation">
+    <!-- Nombre -->
+    <div class="mb-3">
+      <label for="nombre" class="form-label">Nombre del Desafío</label>
+      <input type="text" class="form-control" id="nombre" 
+             formControlName="nombre">
+      <div *ngIf="f['nombre'].invalid && (f['nombre'].dirty || f['nombre'].touched)" class="text-danger">
+        <small *ngIf="f['nombre'].errors?.['required']">El nombre es obligatorio</small>
+        <small *ngIf="f['nombre'].errors?.['minlength']">Mínimo 5 caracteres</small>
+        <small *ngIf="f['nombre'].errors?.['maxlength']">Máximo 100 caracteres</small>
+      </div>
+    </div>
+
+    <!-- Descripción -->
+    <div class="mb-3">
+      <label for="descripcion" class="form-label">Descripción</label>
+      <textarea class="form-control" id="descripcion" rows="3"
+                formControlName="descripcion"></textarea>
+      <div *ngIf="f['descripcion'].invalid && (f['descripcion'].dirty || f['descripcion'].touched)" class="text-danger">
+        <small *ngIf="f['descripcion'].errors?.['required']">La descripción es obligatoria</small>
+        <small *ngIf="f['descripcion'].errors?.['maxlength']">Máximo 500 caracteres</small>
+      </div>
+    </div>
+
+    <!-- Tipo de Actividad -->
+    <div class="mb-3">
+      <label for="tipoActividad" class="form-label">Tipo de Actividad</label>
+      <select class="form-select" id="tipoActividad"
+              formControlName="tipoActividad">
+        <option *ngFor="let tipo of tiposActividad" [value]="tipo">
+          {{ tipo | titlecase }}
+        </option>
+      </select>
+      <div *ngIf="f['tipoActividad'].invalid && (f['tipoActividad'].dirty || f['tipoActividad'].touched)" class="text-danger">
+        <small>Selecciona un tipo de actividad</small>
+      </div>
+    </div>
+
+    <!-- Objetivo -->
+    <div class="mb-3">
+      <label for="objetivo" class="form-label">Objetivo</label>
+      <input type="text" class="form-control" id="objetivo"
+             formControlName="objetivo">
+      <div class="form-text">Ejemplo: "Correr 5 km en menos de 30 minutos"</div>
+      <div *ngIf="f['objetivo'].invalid && (f['objetivo'].dirty || f['objetivo'].touched)" class="text-danger">
+        <small *ngIf="f['objetivo'].errors?.['required']">El objetivo es obligatorio</small>
+        <small *ngIf="f['objetivo'].errors?.['maxlength']">Máximo 200 caracteres</small>
+      </div>
+    </div>
+
+    <!-- Fecha Límite -->
+    <div class="mb-4">
+      <label for="fechaLimite" class="form-label">Fecha Límite</label>
+      <input type="date" class="form-control" id="fechaLimite"
+             formControlName="fechaLimite" [min]="minDate">
+      <div *ngIf="f['fechaLimite'].invalid && (f['fechaLimite'].dirty || f['fechaLimite'].touched)" class="text-danger">
+        <small>Selecciona una fecha válida</small>
+      </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="d-flex justify-content-between">
+      <button type="button" class="btn btn-outline-secondary" (click)="router.navigate(['/desafios'])">
+        Cancelar
+      </button>
+      <button type="submit" class="btn btn-primary" [disabled]="desafioForm.invalid">
+        Crear Desafío
+      </button>
+    </div>
+  </form>
+</div>

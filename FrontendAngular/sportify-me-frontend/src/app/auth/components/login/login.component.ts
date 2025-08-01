@@ -1,7 +1,8 @@
+// auth/components/login/login.component.ts
 import { Component } from '@angular/core';
-import { NgForm } from '@angular/forms';
-import { Router } from '@angular/router';
+import { FormBuilder, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -9,68 +10,23 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
-  credentials = {
-    email: '',
-    password: ''
-  };
-  isLoading = false;
-  errorMessage = '';
+  loginForm = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', Validators.required]
+  });
 
   constructor(
+    private fb: FormBuilder,
     private authService: AuthService,
     private router: Router
   ) {}
 
-  onSubmit(form: NgForm) {
-    if (form.invalid) {
-      this.errorMessage = 'Por favor completa todos los campos correctamente';
-      return;
+  onSubmit() {
+    if (this.loginForm.valid) {
+      this.authService.login(this.loginForm.value).subscribe({
+        next: () => this.router.navigate(['/desafios']),
+        error: (err) => console.error('Error al iniciar sesión', err)
+      });
     }
-
-    this.isLoading = true;
-    this.errorMessage = '';
-
-    this.authService.login(this.credentials).subscribe({
-      next: () => {
-        this.isLoading = false;
-        this.router.navigate(['/desafios']);
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.errorMessage = err.error?.message || 'Error al iniciar sesión. Por favor intenta nuevamente.';
-      }
-    });
-  }
-
-  loginWithGoogle() {
-    this.isLoading = true;
-    this.errorMessage = '';
-
-    this.authService.loginWithGoogle().subscribe({
-      next: () => {
-        this.isLoading = false;
-        this.router.navigate(['/desafios']);
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.errorMessage = err.error?.message || 'Error al iniciar sesión con Google';
-      }
-    });
-  }
-
-  loginWithGithub() {
-    this.isLoading = true;
-    this.errorMessage = '';
-
-    this.authService.loginWithGithub().subscribe({
-      next: () => {
-        this.isLoading = false;
-        this.router.navigate(['/desafios']);
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.errorMessage = err.error?.message || 'Error al iniciar sesión con GitHub';
-      }
-    });
   }
 }

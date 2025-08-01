@@ -1,0 +1,126 @@
+<div class="container mt-4">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-2">Cargando desafío...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="alert alert-danger">
+    {{ error }}
+    <button class="btn btn-sm btn-outline-danger ms-2" (click)="router.navigate(['/desafios'])">Volver</button>
+  </div>
+
+  <!-- Desafío Content -->
+  <div *ngIf="desafio && !loading" class="row">
+    <div class="col-md-8">
+      <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+          <h2>{{ desafio.nombre }}</h2>
+        </div>
+        <div class="card-body">
+          <p class="lead">{{ desafio.descripcion }}</p>
+          <ul class="list-group list-group-flush mb-3">
+            <li class="list-group-item">
+              <strong>Tipo de actividad:</strong> {{ desafio.tipoActividad }}
+            </li>
+            <li class="list-group-item">
+              <strong>Objetivo:</strong> {{ desafio.objetivo }}
+            </li>
+            <li class="list-group-item">
+              <strong>Fecha límite:</strong> {{ desafio.fechaLimite | date:'mediumDate' }}
+            </li>
+            <li class="list-group-item">
+              <strong>Participantes:</strong> {{ desafio.participantes?.length || 0 }}
+            </li>
+          </ul>
+          
+          <div class="d-flex gap-2">
+            <button *ngIf="!participando" class="btn btn-success" (click)="unirseAlDesafio()">
+              Unirse al Desafío
+            </button>
+            <button *ngIf="participando" class="btn btn-outline-secondary" (click)="abandonarDesafio()">
+              Abandonar Desafío
+            </button>
+            <button *ngIf="participando" class="btn btn-info" [routerLink]="['/progresos', 'registrar', desafio.id]">
+              Registrar Progreso
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ranking Section -->
+      <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+          <h4>Ranking de Participantes</h4>
+        </div>
+        <div class="card-body">
+          <div *ngIf="ranking.length === 0" class="text-center py-3">
+            <p>Aún no hay participantes en este desafío</p>
+          </div>
+          <table *ngIf="ranking.length > 0" class="table table-striped">
+            <thead>
+              <tr>
+                <th>Posición</th>
+                <th>Nombre</th>
+                <th>Progreso</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of ranking; let i = index" [class.table-primary]="usuarioActual?.id === item.usuario.id">
+                <td>{{ i + 1 }}</td>
+                <td>{{ item.usuario.nombre }}</td>
+                <td>{{ item.progreso }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comentarios Section -->
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header bg-secondary text-white">
+          <h4>Comentarios</h4>
+        </div>
+        <div class="card-body">
+          <div *ngIf="usuarioActual" class="mb-3">
+            <textarea 
+              class="form-control" 
+              [(ngModel)]="nuevoComentario" 
+              placeholder="Escribe un comentario..."
+              rows="3"
+            ></textarea>
+            <button 
+              class="btn btn-primary mt-2" 
+              (click)="agregarComentario()"
+              [disabled]="!nuevoComentario.trim()"
+            >
+              Enviar
+            </button>
+          </div>
+          <div *ngIf="!usuarioActual" class="alert alert-info">
+            <a [routerLink]="['/auth', 'login']">Inicia sesión</a> para comentar
+          </div>
+          
+          <div *ngIf="comentarios.length === 0" class="text-center py-3">
+            <p>No hay comentarios aún</p>
+          </div>
+          
+          <div class="list-group">
+            <div *ngFor="let comentario of comentarios" class="list-group-item">
+              <div class="d-flex w-100 justify-content-between">
+                <h6 class="mb-1">{{ comentario.usuario.nombre }}</h6>
+                <small>{{ comentario.fecha | date:'short' }}</small>
+              </div>
+              <p class="mb-1">{{ comentario.texto }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

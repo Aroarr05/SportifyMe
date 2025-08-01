@@ -13,7 +13,7 @@ const routes: Routes = [
   // Desafios Routes
   { 
     path: 'desafios', 
-    loadChildren: () => import('./desafios/desafios.module').then(m => m.DesafiosModule),
+    loadChildren: () => import('./modules/desafios/desafios.module').then(m => m.DesafiosModule),
     canActivate: [AuthGuard],
     data: { breadcrumb: 'Desafíos' }
   },
@@ -21,7 +21,7 @@ const routes: Routes = [
   // Progresos Routes
   { 
     path: 'progresos', 
-    loadChildren: () => import('./progresos/progresos.module').then(m => m.ProgresosModule),
+    loadChildren: () => import('./modules/progresos/progresos.module').then(m => m.ProgresosModule),
     canActivate: [AuthGuard],
     data: { breadcrumb: 'Progresos' }
   },
