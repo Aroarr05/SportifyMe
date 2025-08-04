@@ -1,6 +1,6 @@
-import { Usuario } from './usuario.model';
-import { Progreso } from './progreso.model';
-import { Comentario } from './comentario.model';
+import { Usuario } from "./usuario.model";
+import { Progreso } from "./progreso.model";
+import { Comentario } from "./comentario.model";
 
 export interface Desafio {
   id: number;
@@ -8,12 +8,20 @@ export interface Desafio {
   descripcion: string;
   tipoActividad: TipoActividad;
   objetivo: string;
-  fechaCreacion: Date;
+  fechaCreacion: Date | string;
   fechaLimite: Date | string;
-  creador: Usuario | number; // Puede ser el objeto completo o solo el ID
-  participantes?: Usuario[] | number[]; // Array de usuarios o IDs
+  creador: Usuario;
+  participantes?: Usuario[];
   progresos?: Progreso[];
   comentarios?: Comentario[];
+}
+
+export interface CrearDesafioDto {
+  nombre: string;
+  descripcion: string;
+  tipoActividad: TipoActividad;
+  objetivo: string;
+  fechaLimite: string; // Formato ISO
 }
 
 export enum TipoActividad {

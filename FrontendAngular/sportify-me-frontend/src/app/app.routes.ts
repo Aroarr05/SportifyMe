@@ -29,7 +29,7 @@ const routes: Routes = [
   // Rankings Routes
   { 
     path: 'rankings', 
-    loadChildren: () => import('./rankings/rankings.module').then(m => m.RankingsModule),
+    loadChildren: () => import('./modules/rankings/rankings.module').then(m => m.RankingsModule),
     canActivate: [AuthGuard],
     data: { breadcrumb: 'Rankings' }
   },

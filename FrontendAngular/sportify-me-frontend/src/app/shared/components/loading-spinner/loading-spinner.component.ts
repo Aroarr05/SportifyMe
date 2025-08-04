@@ -1,11 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-loading-spinner',
-  imports: [],
-  templateUrl: './loading-spinner.html',
-  styleUrl: './loading-spinner.scss'
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './loading-spinner.component.html',
+  styleUrls: ['./loading-spinner.component.scss']
 })
-export class LoadingSpinner {
-
+export class LoadingSpinnerComponent {
+  @Input() message: string = 'Cargando...';
+  @Input() overlay: boolean = false;
+  @Input() size: 'sm' | 'md' = 'md';
+  @Input() color?: string; // bootstrap color class (primary, success, danger, etc)
 }

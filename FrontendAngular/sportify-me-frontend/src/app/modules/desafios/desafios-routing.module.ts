@@ -1,34 +1,17 @@
-// modules/desafios/desafios-routing.module.ts
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AuthGuard } from '../../auth/guards/auth.guard';
+import { ListaDesafiosComponent } from './components/lista-desafios/lista-desafios.component';
+import { CrearDesafioComponent } from './components/crear-desafio/crear-desafio.component';
+import { DetalleDesafioComponent } from './components/detalle-desafio/detalle-desafio.component';
 
 const routes: Routes = [
-  { 
-    path: '', 
-    loadComponent: () => import('./components/lista-desafios/lista-desafios.component')
-      .then(m => m.ListaDesafiosComponent),
-    canActivate: [AuthGuard],
-    data: { breadcrumb: 'Desafíos' }
-  },
-  { 
-    path: 'crear', 
-    loadComponent: () => import('./components/crear-desafio/crear-desafio.component')
-      .then(m => m.CrearDesafioComponent),
-    canActivate: [AuthGuard],
-    data: { breadcrumb: 'Crear Desafío' }
-  },
-  { 
-    path: ':id', 
-    loadComponent: () => import('./components/detalle-desafio/detalle-desafio.component')
-      .then(m => m.DetalleDesafioComponent),
-    canActivate: [AuthGuard],
-    data: { breadcrumb: 'Detalle' }
-  }
+  { path: '', component: ListaDesafiosComponent, data: { breadcrumb: 'Lista de desafíos' } },
+  { path: 'crear', component: CrearDesafioComponent, data: { breadcrumb: 'Crear desafío' } },
+  { path: ':id', component: DetalleDesafioComponent, data: { breadcrumb: 'Detalle del desafío' } }
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class DesafiosRoutingModule {}
+export class DesafiosRoutingModule { }

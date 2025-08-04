@@ -1,9 +1,8 @@
-// modules/desafios/services/desafios.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../../enviroments/enviroment.port';
-import { Desafio } from '../../../shared/models/desafio.model';
+import { environment } from '../../../../environments/environment';
+import { Desafio } from '../../../shared/models';
 import { CrearDesafioDto } from '../dto/crear-desafio.dto';
 
 @Injectable({
@@ -12,7 +11,7 @@ import { CrearDesafioDto } from '../dto/crear-desafio.dto';
 export class DesafiosService {
   private apiUrl = `${environment.apiUrl}/desafios`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getDesafios(): Observable<Desafio[]> {
     return this.http.get<Desafio[]>(this.apiUrl);
@@ -22,19 +21,11 @@ export class DesafiosService {
     return this.http.get<Desafio>(`${this.apiUrl}/${id}`);
   }
 
-  crearDesafio(desafioData: CrearDesafioDto): Observable<Desafio> {
-    return this.http.post<Desafio>(this.apiUrl, desafioData);
+  crearDesafio(desafioDto: CrearDesafioDto): Observable<Desafio> {
+    return this.http.post<Desafio>(this.apiUrl, desafioDto);
   }
 
   unirseADesafio(desafioId: number): Observable<Desafio> {
     return this.http.post<Desafio>(`${this.apiUrl}/${desafioId}/unirse`, {});
-  }
-
-  abandonarDesafio(desafioId: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${desafioId}/abandonar`);
-  }
-
-  getDesafiosDelUsuario(): Observable<Desafio[]> {
-    return this.http.get<Desafio[]>(`${this.apiUrl}/mis-desafios`);
   }
 }

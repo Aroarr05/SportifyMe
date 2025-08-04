@@ -12,6 +12,13 @@ export interface Progreso {
   validado?: boolean;
 }
 
+export interface CrearProgresoDto {
+  valor: number;
+  unidad: string;
+  usuarioId: number;
+  desafioId: number;
+}
+
 export enum UnidadMedida {
   KILOMETROS = 'KILOMETROS',
   METROS = 'METROS',

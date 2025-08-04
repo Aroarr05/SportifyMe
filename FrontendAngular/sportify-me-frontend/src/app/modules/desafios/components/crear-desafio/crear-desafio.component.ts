@@ -1,51 +1,57 @@
-import { Component } from '@angular/core';
-import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { DesafiosService } from '../../services/desafios.service';
-import { Router, RouterModule } from '@angular/router';
-import { TipoActividad } from '../../../../shared/models/desafio.model';
-import { CrearDesafioDto } from '../../dto/crear-desafio.dto';
-import { CommonModule } from '@angular/common';
+import { TipoActividad } from '../../../../shared/models';
 
 @Component({
-  selector: 'app-crear-desafio',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  selector: 'app-crear-desafio',
   templateUrl: './crear-desafio.component.html',
   styleUrls: ['./crear-desafio.component.scss']
 })
-export class CrearDesafioComponent {
+
+export class CrearDesafioComponent implements OnInit {
+  desafioForm: FormGroup;
   tiposActividad = Object.values(TipoActividad);
-  minDate = new Date().toISOString().split('T')[0]; // Para validación de fecha
-  
-  desafioForm = this.fb.group({
-    nombre: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]],
-    descripcion: ['', [Validators.required, Validators.maxLength(500)]],
-    tipoActividad: [TipoActividad.CARRERA, Validators.required],
-    objetivo: ['', [Validators.required, Validators.maxLength(200)]],
-    fechaLimite: ['', [Validators.required]]
-  });
+  loading = false;
+  error: string | null = null;
 
   constructor(
     private fb: FormBuilder,
     private desafiosService: DesafiosService,
     private router: Router
-  ) {}
-
-  get f() {
-    return this.desafioForm.controls;
+  ) {
+    this.desafioForm = this.fb.group({
+      nombre: ['', [Validators.required, Validators.maxLength(100)]],
+      descripcion: ['', [Validators.required, Validators.maxLength(500)]],
+      tipoActividad: [TipoActividad.CARRERA, Validators.required],
+      objetivo: ['', [Validators.required, Validators.maxLength(200)]],
+      fechaLimite: ['', [Validators.required]]
+    });
   }
 
-  onSubmit() {
-    if (this.desafioForm.valid) {
-      const desafioData = this.desafioForm.value as CrearDesafioDto;
-      this.desafiosService.crearDesafio(desafioData).subscribe({
-        next: (desafioCreado) => {
-          this.router.navigate(['/desafios', desafioCreado.id]);
-        },
-        error: (err) => {
-          console.error('Error al crear el desafío', err);
-        }
-      });
+  ngOnInit(): void {}
+
+  onSubmit(): void {
+    if (this.desafioForm.invalid) {
+      return;
     }
+
+    this.loading = true;
+    this.error = null;
+
+    const desafioDto = this.desafioForm.value;
+    this.desafiosService.crearDesafio(desafioDto).subscribe({
+      next: (desafio) => {
+        this.loading = false;
+        this.router.navigate(['/desafios', desafio.id]);
+      },
+      error: (err) => {
+        this.error = 'Error al crear el desafío. Por favor, inténtalo de nuevo.';
+        this.loading = false;
+        console.error(err);
+      }
+    });
   }
 }
