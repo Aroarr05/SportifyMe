@@ -1,16 +1,23 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { DesafiosService } from '../../services/desafios.service';
 import { TipoActividad } from '../../../../shared/models';
+import { ErrorAlertComponent } from '../../../../shared/components/error-alert/error-alert.component';
 
 @Component({
   standalone: true,
   selector: 'app-crear-desafio',
   templateUrl: './crear-desafio.component.html',
-  styleUrls: ['./crear-desafio.component.scss']
+  styleUrls: ['./crear-desafio.component.scss'],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterModule,
+    ErrorAlertComponent
+  ]
 })
-
 export class CrearDesafioComponent implements OnInit {
   desafioForm: FormGroup;
   tiposActividad = Object.values(TipoActividad);
