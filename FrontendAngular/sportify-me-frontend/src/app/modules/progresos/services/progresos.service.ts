@@ -1,8 +1,8 @@
-
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../enviroments/enviroment.port';
+import { Progreso, CrearProgresoDto, UnidadMedida } from '../../../shared/models/progreso.model';
 
 @Injectable({
   providedIn: 'root'
@@ -16,15 +16,15 @@ export class ProgresosService {
     return this.http.get<any>(`${this.apiUrl}/resumen`);
   }
 
-  obtenerProgresosPorDesafio(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/por-desafio`);
+  obtenerProgresosPorDesafio(): Observable<Progreso[]> {
+    return this.http.get<Progreso[]>(`${this.apiUrl}/por-desafio`);
   }
 
-  registrarProgreso(desafioId: number, progreso: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/${desafioId}`, progreso);
+  registrarProgreso(desafioId: number, progresoDto: CrearProgresoDto): Observable<Progreso> {
+    return this.http.post<Progreso>(`${this.apiUrl}/${desafioId}`, progresoDto);
   }
 
-  obtenerProgresosDesafio(desafioId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/desafio/${desafioId}`);
+  obtenerProgresosDesafio(desafioId: number): Observable<Progreso[]> {
+    return this.http.get<Progreso[]>(`${this.apiUrl}/desafio/${desafioId}`);
   }
 }

@@ -6,7 +6,8 @@
           <h3 class="text-center">Registrar Progreso</h3>
         </div>
         <div class="card-body">
-          <form (ngSubmit)="onSubmit()">
+          <form (ngSubmit)="onSubmit()" #progresoForm="ngForm">
+            
             <div class="mb-3">
               <label class="form-label">Desafío</label>
               <input type="text" class="form-control" [value]="desafio?.nombre" disabled>
@@ -14,33 +15,82 @@
             
             <div class="mb-3">
               <label for="valor" class="form-label">Progreso</label>
-              <input type="number" class="form-control" id="valor" [(ngModel)]="progreso.valor" name="valor" step="0.01" required>
+              <input 
+                type="number" 
+                class="form-control" 
+                id="valor" 
+                [(ngModel)]="progreso.valor" 
+                name="valor" 
+                step="0.01" 
+                min="0.01"
+                required
+                #valorInput="ngModel"
+              >
+              <div *ngIf="valorInput.invalid && valorInput.touched" class="text-danger">
+                El valor es requerido y debe ser mayor a 0
+              </div>
               <div class="form-text">Ej: 5.2 (km), 30.5 (minutos), etc.</div>
             </div>
             
             <div class="mb-3">
               <label for="unidad" class="form-label">Unidad de Medida</label>
-              <select class="form-select" id="unidad" [(ngModel)]="progreso.unidad" name="unidad" required>
-                <option value="km">Kilómetros</option>
-                <option value="min">Minutos</option>
-                <option value="rep">Repeticiones</option>
-                <option value="kg">Kilogramos</option>
+              <select 
+                class="form-select" 
+                id="unidad" 
+                [(ngModel)]="progreso.unidad" 
+                name="unidad" 
+                required
+                #unidadInput="ngModel"
+              >
+                <option *ngFor="let unidad of unidadesMedida" [value]="unidad">
+                  {{ getUnidadTexto(unidad) }}
+                </option>
               </select>
+              <div *ngIf="unidadInput.invalid && unidadInput.touched" class="text-danger">
+                La unidad es requerida
+              </div>
             </div>
             
             <div class="mb-3">
               <label for="fecha" class="form-label">Fecha</label>
-              <input type="date" class="form-control" id="fecha" [(ngModel)]="progreso.fecha" name="fecha" required>
+              <input 
+                type="date" 
+                class="form-control" 
+                id="fecha" 
+                [(ngModel)]="fechaRegistro" 
+                name="fecha" 
+                required
+                #fechaInput="ngModel"
+              >
+              <div *ngIf="fechaInput.invalid && fechaInput.touched" class="text-danger">
+                La fecha es requerida
+              </div>
             </div>
             
             <div class="mb-3">
               <label for="comentario" class="form-label">Comentario (opcional)</label>
-              <textarea class="form-control" id="comentario" [(ngModel)]="progreso.comentario" name="comentario" rows="3"></textarea>
+              <textarea 
+                class="form-control" 
+                id="comentario" 
+                [(ngModel)]="comentario" 
+                name="comentario" 
+                rows="3"
+                maxlength="500"
+              ></textarea>
+              <div class="form-text">{{ comentario.length }}/500 caracteres</div>
             </div>
             
             <div class="d-grid gap-2">
-              <button type="submit" class="btn btn-success">Registrar Progreso</button>
-              <button type="button" class="btn btn-outline-secondary" (click)="cancelar()">Cancelar</button>
+              <button 
+                type="submit" 
+                class="btn btn-success"
+                [disabled]="progresoForm.invalid"
+              >
+                Registrar Progreso
+              </button>
+              <button type="button" class="btn btn-outline-secondary" (click)="cancelar()">
+                Cancelar
+              </button>
             </div>
           </form>
         </div>
