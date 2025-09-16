@@ -1,8 +1,14 @@
-import { Injectable } from '@angular/core';
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+// otros imports...
 
-@Injectable({
-  providedIn: 'root'
+@NgModule({
+  declarations: [
+    // tus componentes
+  ],
+  imports: [
+    CommonModule,
+    // otros módulos
+  ]
 })
-export class Progresos {
-  
-}
+export class ProgresosModule { } // ← Asegurar que tiene 'export'

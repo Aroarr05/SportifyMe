@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ProgresosService } from '../../services/progresos.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DesafiosService } from '../../../desafios/services/desafios.service';
-import { Desafio } from '../../../shared/models/desafio.model';
+import { Desafio } from '../../../../shared/models';
 
 @Component({
   selector: 'app-registrar-progreso',

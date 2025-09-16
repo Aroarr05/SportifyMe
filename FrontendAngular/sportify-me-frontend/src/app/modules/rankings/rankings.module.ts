@@ -1,8 +1,12 @@
-import { Injectable } from '@angular/core';
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
-@Injectable({
-  providedIn: 'root'
+@NgModule({
+  declarations: [
+    // tus componentes
+  ],
+  imports: [
+    CommonModule,
+  ]
 })
-export class Rankings {
-  
-}
+export class RankingsModule { } // ← Asegurar que tiene 'export'

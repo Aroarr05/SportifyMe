@@ -1,16 +1,30 @@
-import { TestBed } from '@angular/core/testing';
 
-import { Progresos } from './progresos';
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../../../../enviroments/enviroment.port';
 
-describe('Progresos', () => {
-  let service: Progresos;
+@Injectable({
+  providedIn: 'root'
+})
+export class ProgresosService {
+  private apiUrl = `${environment.apiUrl}/progresos`;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(Progresos);
-  });
+  constructor(private http: HttpClient) { }
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-});
+  obtenerResumenProgresos(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/resumen`);
+  }
+
+  obtenerProgresosPorDesafio(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/por-desafio`);
+  }
+
+  registrarProgreso(desafioId: number, progreso: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/${desafioId}`, progreso);
+  }
+
+  obtenerProgresosDesafio(desafioId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/desafio/${desafioId}`);
+  }
+}
