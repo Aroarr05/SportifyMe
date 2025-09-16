@@ -13,3 +13,10 @@ export interface RankingDesafio {
   nombreDesafio: string;
   ranking: Ranking[];
 }
+
+export interface FiltroRanking {
+  tipo?: string;
+  fechaInicio?: Date;
+  fechaFin?: Date;
+  limit?: number;
+}

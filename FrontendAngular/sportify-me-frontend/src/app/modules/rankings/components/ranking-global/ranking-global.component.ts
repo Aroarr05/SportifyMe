@@ -1,25 +1,27 @@
-import { Component, OnInit } from '@angular/core';
-import { RankingsService } from '../../services/rankings.service';
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../../../../../enviroments/enviroment.port';
+import { Ranking,RankingDesafio } from '../../../../shared/models';
 
-@Component({
-  selector: 'app-ranking-global',
-  templateUrl: './ranking-global.component.html',
-  styleUrls: ['./ranking-global.component.scss']
+@Injectable({
+  providedIn: 'root'
 })
-export class RankingGlobalComponent implements OnInit {
-  ranking: any[] = [];
-  filtroTipo: string = 'todos';
+export class RankingsService {
+  private apiUrl = `${environment.apiUrl}/rankings`;
 
-  constructor(private rankingsService: RankingsService) {}
+  constructor(private http: HttpClient) { }
 
-  ngOnInit(): void {
-    this.cargarRanking();
+  obtenerRankingGlobal(tipo: string = 'todos'): Observable<Ranking[]> {
+    let params = new HttpParams();
+    if (tipo !== 'todos') {
+      params = params.set('tipo', tipo);
+    }
+    
+    return this.http.get<Ranking[]>(`${this.apiUrl}/global`, { params });
   }
 
-  cargarRanking() {
-    this.rankingsService.obtenerRankingGlobal(this.filtroTipo).subscribe({
-      next: (ranking) => this.ranking = ranking,
-      error: (err) => console.error('Error al cargar ranking:', err)
-    });
+  obtenerRankingDesafio(desafioId: number): Observable<RankingDesafio> {
+    return this.http.get<RankingDesafio>(`${this.apiUrl}/desafio/${desafioId}`);
   }
 }
