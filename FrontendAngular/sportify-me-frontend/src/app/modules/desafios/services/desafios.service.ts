@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../../enviroments/enviroment.port';
+import { environment } from '../../../../enviroments/environment';
 import { Desafio } from '../../../shared/models';
 import { CrearDesafioDto } from '../dto/crear-desafio.dto';
 

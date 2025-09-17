@@ -6,32 +6,17 @@
           <h3 class="text-center mb-0">Iniciar Sesión</h3>
         </div>
         <div class="card-body">
-          <!-- Mensaje de error -->
-          <div *ngIf="errorMessage" class="alert alert-danger">
-            {{ errorMessage }}
-          </div>
-
-          <!-- Spinner de carga -->
-          <div *ngIf="isLoading" class="text-center mb-3">
-            <div class="spinner-border text-primary" role="status">
-              <span class="visually-hidden">Cargando...</span>
-            </div>
-          </div>
-
-          <!-- Formulario -->
-          <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)" *ngIf="!isLoading">
+          <!-- Formulario con Reactive Forms -->
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
             <div class="form-group mb-3">
               <label for="email" class="form-label">Correo Electrónico</label>
               <input 
                 type="email" 
                 class="form-control" 
                 id="email" 
-                [(ngModel)]="credentials.email" 
-                name="email" 
-                required
-                email
-                [class.is-invalid]="loginForm.submitted && loginForm.controls['email']?.invalid">
-              <div *ngIf="loginForm.submitted && loginForm.controls['email']?.invalid" class="invalid-feedback">
+                formControlName="email"
+                [class.is-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+              <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="invalid-feedback">
                 Por favor ingresa un correo electrónico válido
               </div>
             </div>
@@ -42,17 +27,14 @@
                 type="password" 
                 class="form-control" 
                 id="password" 
-                [(ngModel)]="credentials.password" 
-                name="password" 
-                required
-                minlength="6"
-                [class.is-invalid]="loginForm.submitted && loginForm.controls['password']?.invalid">
-              <div *ngIf="loginForm.submitted && loginForm.controls['password']?.invalid" class="invalid-feedback">
-                La contraseña debe tener al menos 6 caracteres
+                formControlName="password"
+                [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+              <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="invalid-feedback">
+                La contraseña es requerida
               </div>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
+            <button type="submit" [disabled]="loginForm.invalid" class="btn btn-primary w-100 py-2 mb-3">
               Iniciar Sesión
             </button>
 
@@ -60,15 +42,6 @@
               <a routerLink="/auth/registro" class="text-decoration-none">
                 ¿No tienes cuenta? Regístrate aquí
               </a>
-            </div>
-
-            <div class="d-flex justify-content-center gap-3">
-              <button type="button" class="btn btn-outline-primary" (click)="loginWithGoogle()">
-                <i class="bi bi-google me-2"></i> Google
-              </button>
-              <button type="button" class="btn btn-outline-dark" (click)="loginWithGithub()">
-                <i class="bi bi-github me-2"></i> GitHub
-              </button>
             </div>
           </form>
         </div>

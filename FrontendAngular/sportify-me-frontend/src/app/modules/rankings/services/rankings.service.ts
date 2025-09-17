@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../../enviroments/enviroment.port';
+import { environment } from '../../../../enviroments/environment';
 import { Ranking, RankingDesafio } from '../../../shared/models/ranking.model';
 
 @Injectable({
