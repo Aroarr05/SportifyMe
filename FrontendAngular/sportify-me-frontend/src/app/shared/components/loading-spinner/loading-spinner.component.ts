@@ -8,9 +8,10 @@ import { CommonModule } from '@angular/common';
   templateUrl: './loading-spinner.component.html',
   styleUrls: ['./loading-spinner.component.scss']
 })
+
 export class LoadingSpinnerComponent {
   @Input() message: string = 'Cargando...';
   @Input() overlay: boolean = false;
   @Input() size: 'sm' | 'md' = 'md';
-  @Input() color?: string; // bootstrap color class (primary, success, danger, etc)
+  @Input() color?: string; 
 }

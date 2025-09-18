@@ -1,15 +1,24 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { Router } from '@angular/router';
 
 @Component({
+  standalone: true,
   selector: 'app-registro',
   templateUrl: './registro.component.html',
-  styleUrls: ['./registro.component.scss']
+  styleUrls: ['./registro.component.scss'],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterModule
+  ]
 })
 export class RegistroComponent implements OnInit {
   registroForm!: FormGroup;
+  loading = false;
+  error: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -27,6 +36,9 @@ export class RegistroComponent implements OnInit {
 
   onSubmit() {
     if (this.registroForm.valid) {
+      this.loading = true;
+      this.error = null;
+      
       const userData = {
         nombre: this.registroForm.get('nombre')?.value || '',
         email: this.registroForm.get('email')?.value || '',
@@ -35,10 +47,15 @@ export class RegistroComponent implements OnInit {
 
       this.authService.register(userData).subscribe({
         next: () => {
+          this.loading = false;
           alert('Registro exitoso. Por favor inicia sesión.');
           this.router.navigate(['/auth/login']);
         },
-        error: (err) => alert('Error en el registro: ' + (err.error?.message || err.message))
+        error: (err) => {
+          this.loading = false;
+          this.error = err.error?.message || 'Error en el registro. Por favor, intenta nuevamente.';
+          console.error('Error en registro:', err);
+        }
       });
     }
   }

@@ -6,7 +6,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './components/login/login.component';
 import { RegistroComponent } from './components/registro/registro.component';
 
-// Definir las rutas directamente aquí
 const authRoutes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'registro', component: RegistroComponent },
@@ -14,15 +13,12 @@ const authRoutes: Routes = [
 ];
 
 @NgModule({
-  declarations: [
-    LoginComponent,
-    RegistroComponent
-  ],
-  imports: [
+  imports: [  
     CommonModule,
     ReactiveFormsModule,
-    RouterModule.forChild(authRoutes)
+    RouterModule.forChild(authRoutes),
+    RegistroComponent 
   ]
-  // No necesitas providers aquí - los servicios con providedIn: 'root' se registran automáticamente
 })
+
 export class AuthModule { }

@@ -1,4 +1,4 @@
-// error-alert.component.ts
+
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './error-alert.component.html',
   imports: [CommonModule]
 })
+
 export class ErrorAlertComponent {
   @Input() message: string = '';
 }
