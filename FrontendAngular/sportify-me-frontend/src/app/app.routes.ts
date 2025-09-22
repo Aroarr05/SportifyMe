@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './auth/guards/auth.guard';
 
-const routes: Routes = [
+export const routes: Routes = [
   { path: '', redirectTo: '/desafios', pathMatch: 'full' },
   
   // Auth Routes
