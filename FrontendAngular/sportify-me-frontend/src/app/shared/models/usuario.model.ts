@@ -5,15 +5,18 @@ export interface Usuario {
   id: number;
   nombre: string;
   email: string;
-  password?: string; // Solo para formularios, no debe venir del backend
+  fechaNacimiento?: Date;
+  fechaRegistro: Date;
   avatar?: string;
-  fechaRegistro?: Date;
-  roles?: Rol[];
-  desafiosCreados?: Desafio[];
-  desafiosParticipantes?: Desafio[];
-  progresos?: Progreso[];
+  peso?: number;
+  altura?: number;
+  deportesFavoritos?: string[];
+  biografia?: string;
+  // Campos para estadísticas
+  totalDesafiosCompletados?: number;
+  mejorPosicionRanking?: number;
+  tiempoTotalEntrenamiento?: number; // en minutos
 }
-
 export enum Rol {
   ADMIN = 'ADMIN',
   USER = 'USER',

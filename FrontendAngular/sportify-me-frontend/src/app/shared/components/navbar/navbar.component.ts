@@ -12,22 +12,22 @@ import { RouterModule } from '@angular/router';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss']
 })
-
 export class NavbarComponent implements OnInit {
   isAuthenticated = false;
-  currentUser?: Usuario; // Mantener como undefined
+  currentUser?: Usuario;
 
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
-    this.authService.currentUser.subscribe(user => {
+    // ← CAMBIA currentUser por currentUser$
+    this.authService.currentUser$.subscribe(user => {
       this.isAuthenticated = !!user;
-      this.currentUser = user || undefined; // ← Convertir null a undefined
+      this.currentUser = user || undefined;
     });
   }
 
   onLogout() {
     this.authService.logout();
-    this.router.navigate(['/login']);
+    this.router.navigate(['/auth/login']); // ← Ajusta la ruta según tu configuración
   }
 }
