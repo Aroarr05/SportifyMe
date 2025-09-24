@@ -1,33 +1,41 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../../../auth/services/auth.service';
-import { Usuario } from '../../models/usuario.model';
-import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { AuthService } from '../../../auth/services/auth.service';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
   imports: [CommonModule, RouterModule],
-  templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.scss']
+  template: `
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" routerLink="/">
+          <i class="fas fa-running me-2"></i>SportifyMe
+        </a>
+
+        <div class="navbar-nav ms-auto">
+          <!-- Opciones para usuarios NO autenticados -->
+          @if (!authService.isLoggedIn()) {
+            <a class="nav-link" routerLink="/auth/login">Iniciar Sesión</a>
+            <a class="nav-link" routerLink="/auth/register">Registrarse</a>
+          }
+          
+          <!-- Opciones para usuarios autenticados -->
+          @if (authService.isLoggedIn()) {
+            <span class="navbar-text me-3">Hola, {{ authService.getCurrentUser()?.nombre }}</span>
+            <button class="btn btn-outline-light btn-sm" (click)="onLogout()">Cerrar Sesión</button>
+          }
+        </div>
+      </div>
+    </nav>
+  `
 })
-export class NavbarComponent implements OnInit {
-  isAuthenticated = false;
-  currentUser?: Usuario;
-
-  constructor(private authService: AuthService, private router: Router) {}
-
-  ngOnInit(): void {
-    // ← CAMBIA currentUser por currentUser$
-    this.authService.currentUser$.subscribe(user => {
-      this.isAuthenticated = !!user;
-      this.currentUser = user || undefined;
-    });
-  }
+export class NavbarComponent {
+  
+  constructor(public authService: AuthService) {}
 
   onLogout() {
     this.authService.logout();
-    this.router.navigate(['/auth/login']); // ← Ajusta la ruta según tu configuración
   }
 }
