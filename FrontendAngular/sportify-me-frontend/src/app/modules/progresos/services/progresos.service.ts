@@ -20,8 +20,9 @@ export class ProgresosService {
     return this.http.get<Progreso[]>(`${this.apiUrl}/por-desafio`);
   }
 
-  registrarProgreso(desafioId: number, progresoDto: CrearProgresoDto): Observable<Progreso> {
-    return this.http.post<Progreso>(`${this.apiUrl}/${desafioId}`, progresoDto);
+  // ✅ CORREGIDO: Quitar el parámetro desafioId ya que viene en el DTO
+  registrarProgreso(progresoDto: CrearProgresoDto): Observable<Progreso> {
+    return this.http.post<Progreso>(this.apiUrl, progresoDto);
   }
 
   obtenerProgresosDesafio(desafioId: number): Observable<Progreso[]> {

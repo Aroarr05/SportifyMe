@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { ProgresosService } from '../../services/progresos.service';
-import { DesafiosService } from '../../../desafios/services/desafios.service';
+import { DesafiosService } from '../../../desafios/services/desafios.services';
 import { Desafio } from '../../../../shared/models';
 import { CrearProgresoDto, UnidadMedida } from '../../../../shared/models/progreso.model';
 
@@ -45,10 +45,10 @@ export class RegistrarProgresoComponent implements OnInit {
       const id = parseInt(desafioId);
       this.progreso.desafioId = id;
       
-      // Asegúrate de que tu DesafiosService tenga este método
-      this.desafiosService.getDesafioById(id).subscribe({
-        next: (desafio) => this.desafio = desafio,
-        error: (err) => console.error('Error al cargar desafío:', err)
+      // ✅ CORREGIDO: Usar obtenerDesafioPorId en lugar de getDesafioById
+      this.desafiosService.obtenerDesafioPorId(id).subscribe({
+        next: (desafio: Desafio) => this.desafio = desafio,
+        error: (err: any) => console.error('Error al cargar desafío:', err)
       });
     }
   }
@@ -62,7 +62,8 @@ export class RegistrarProgresoComponent implements OnInit {
         comentario: this.comentario
       };
 
-      this.progresosService.registrarProgreso(this.progreso.desafioId, progresoCompleto).subscribe({
+      // ✅ CORREGIDO: Quitar el primer parámetro desafioId ya que viene en el DTO
+      this.progresosService.registrarProgreso(progresoCompleto).subscribe({
         next: () => {
           alert('Progreso registrado con éxito');
           this.router.navigate(['/desafios', this.desafio?.id]);

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { DesafiosService } from '../../services/desafios.service';
+import { DesafiosService } from '../../services/desafios.services';
 import { Desafio } from '../../../../shared/models';
 import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
 import { ErrorAlertComponent } from '../../../../shared/components/error-alert/error-alert.component';
@@ -33,7 +33,7 @@ export class ListaDesafiosComponent implements OnInit {
     this.loading = true;
     this.error = null;
     
-    this.desafiosService.getDesafios().subscribe({
+    this.desafiosService.obtenerDesafios().subscribe({
       next: (desafios) => {
         this.desafios = desafios;
         this.loading = false;

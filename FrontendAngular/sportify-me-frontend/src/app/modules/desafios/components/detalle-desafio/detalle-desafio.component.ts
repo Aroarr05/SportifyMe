@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { DesafiosService } from '../../services/desafios.service';
+import { Subscription } from 'rxjs';
+import { DesafiosService } from '../../services/desafios.services';
 import { Desafio } from '../../../../shared/models';
 import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
 import { ErrorAlertComponent } from '../../../../shared/components/error-alert/error-alert.component';
@@ -18,11 +19,16 @@ import { ErrorAlertComponent } from '../../../../shared/components/error-alert/e
     ErrorAlertComponent
   ]
 })
-export class DetalleDesafioComponent implements OnInit {
+
+export class DetalleDesafioComponent implements OnInit, OnDestroy {
   desafio: Desafio | null = null;
   loading = true;
   error: string | null = null;
   unirseLoading = false;
+  private routeSub?: Subscription;
+  
+  // CAMBIO: Quitar 'private' para hacerla pública y accesible desde el template
+  usuarioActualId = 1; // Ejemplo - reemplazar con lógica real
 
   constructor(
     private route: ActivatedRoute,
@@ -30,12 +36,21 @@ export class DetalleDesafioComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.cargarDesafio(+id);
-    } else {
-      this.error = 'No se encontró el ID del desafío';
-      this.loading = false;
+    // Usar observable para cambios de ruta
+    this.routeSub = this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.cargarDesafio(+id);
+      } else {
+        this.error = 'No se encontró el ID del desafío';
+        this.loading = false;
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.routeSub) {
+      this.routeSub.unsubscribe();
     }
   }
 
@@ -43,7 +58,7 @@ export class DetalleDesafioComponent implements OnInit {
     this.loading = true;
     this.error = null;
     
-    this.desafiosService.getDesafioById(id).subscribe({
+    this.desafiosService.obtenerDesafioPorId(id).subscribe({
       next: (desafio) => {
         this.desafio = desafio;
         this.loading = false;
@@ -62,6 +77,17 @@ export class DetalleDesafioComponent implements OnInit {
       return;
     }
 
+    // Validaciones adicionales
+    if (this.yaEsParticipante()) {
+      this.error = 'Ya eres participante de este desafío';
+      return;
+    }
+
+    if (this.esDesafioExpirado()) {
+      this.error = 'No puedes unirte a un desafío expirado';
+      return;
+    }
+
     this.unirseLoading = true;
     this.error = null;
 
@@ -76,5 +102,22 @@ export class DetalleDesafioComponent implements OnInit {
         console.error(err);
       }
     });
+  }
+
+  esDesafioExpirado(): boolean {
+    if (!this.desafio?.fechaLimite) return false;
+    return new Date(this.desafio.fechaLimite) < new Date();
+  }
+
+  yaEsParticipante(): boolean {
+    if (!this.desafio?.participantes || !this.usuarioActualId) return false;
+    return this.desafio.participantes.some(p => p.id === this.usuarioActualId);
+  }
+
+  // Método para obtener el texto del botón según el estado
+  getTextoBoton(): string {
+    if (this.yaEsParticipante()) return 'Ya participas';
+    if (this.esDesafioExpirado()) return 'Desafío Expirado';
+    return 'Unirse al Desafío';
   }
 }

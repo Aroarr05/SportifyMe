@@ -1,88 +1,132 @@
-sportify-me-frontend/
-├── src/
-│   ├── app/
-│   │   ├── auth/
-│   │   │   ├── components/
-│   │   │   │   ├── login/
-│   │   │   │   │   ├── login.component.ts
-│   │   │   │   │   ├── login.component.html
-│   │   │   │   │   └── login.component.scss
-│   │   │   │   └── registro/
-│   │   │   │       ├── registro.component.ts
-│   │   │   │       ├── registro.component.html
-│   │   │   │       └── registro.component.scss
-│   │   │   ├── guards/
-│   │   │   │   ├── auth.guard.ts
-│   │   │   │   └── no-auth.guard.ts
-│   │   │   ├── services/
-│   │   │   │   └── auth.service.ts
-│   │   │   ├── auth.module.ts
-│   │   │   └── auth.routes.ts
-│   │   │
-│   │   ├── core/
-│   │   │   ├── interceptors/
-│   │   │   │   ├── auth.interceptor.ts
-│   │   │   │   └── error.interceptor.ts
-│   │   │   ├── guards/
-│   │   │   │   └── auth.guard.ts
-│   │   │   └── core.module.ts
-│   │   │
-│   │   ├── modules/
-│   │   │   ├── desafios/
-│   │   │   │   ├── components/
-│   │   │   │   │   ├── lista-desafios/
-│   │   │   │   │   │   ├── lista-desafios.component.ts
-│   │   │   │   │   │   ├── lista-desafios.component.html
-│   │   │   │   │   │   └── lista-desafios.component.scss
-│   │   │   │   │   ├── crear-desafio/
-│   │   │   │   │   │   ├── crear-desafio.component.ts
-│   │   │   │   │   │   ├── crear-desafio.component.html
-│   │   │   │   │   │   └── crear-desafio.component.scss
-│   │   │   │   │   └── detalle-desafio/
-│   │   │   │   │       ├── detalle-desafio.component.ts
-│   │   │   │   │       ├── detalle-desafio.component.html
-│   │   │   │   │       └── detalle-desafio.component.scss
-│   │   │   │   ├── dto/
-│   │   │   │   │   └── crear-desafio.dto.ts
-│   │   │   │   ├── services/
-│   │   │   │   │   └── desafios.service.ts
-│   │   │   │   └── desafios-routing.module.ts
-│   │   │   │   └── desafios.module.ts
-│   │   │   │
-│   │   │   ├── progresos/
-│   │   │   │   ├── components/
-│   │   │   │   ├── services/
-│   │   │   │   └── progresos.module.ts
-│   │   │   │
-│   │   │   └── rankings/
-│   │   │       ├── components/
-│   │   │       ├── services/
-│   │   │       └── rankings.module.ts
-│   │   │
-│   │   ├── shared/
-│   │   │   ├── components/
-│   │   │   │   ├── navbar/
-│   │   │   │   ├── loading-spinner/
-│   │   │   │   └── error-alert/
-│   │   │   ├── models/
-│   │   │   │   ├── desafio.model.ts
-│   │   │   │   ├── usuario.model.ts
-│   │   │   │   ├── progreso.model.ts
-│   │   │   │   ├── comentario.model.ts
-│   │   │   │   └── ... otros modelos
-│   │   │   └── shared.module.ts
-│   │   │
-│   │   ├── app-routing.module.ts
-│   │   └── app.module.ts
-│   │
-│   ├── assets/
-│   ├── environments/
-│   │   ├── environment.ts
-│   │   └── environment.prod.ts
-│   └── styles/
-│       └── styles.scss
-│
+SPORTIFY-ME-FRONTEND/
+├── .editorconfig
+├── .gitignore
+├── README.md
 ├── angular.json
 ├── package.json
+├── package-lock.json
 ├── tsconfig.json
-└── tailwind.config.js
+├── tsconfig.app.json
+├── tsconfig.spec.json
+├── node_modules/
+├── public/
+└── src/
+    ├── index.html
+    ├── main.ts
+    ├── main.server.ts
+    ├── server.ts
+    ├── styles.scss
+    ├── app/
+    │   ├── app.config.ts
+    │   ├── app.config.server.ts
+    │   ├── app.routes.ts
+    │   ├── app.routes.server.ts
+    │   ├── app.scss
+    │   ├── app.spec.ts
+    │   ├── app.ts
+    │   │
+    │   ├── auth/
+    │   │   ├── components/
+    │   │   │   ├── login/
+    │   │   │   │   ├── login.component.html
+    │   │   │   │   ├── login.component.scss
+    │   │   │   │   └── login.component.ts
+    │   │   │   └── registro/
+    │   │   │       ├── registro.component.html
+    │   │   │       ├── registro.component.scss
+    │   │   │       └── registro.component.ts
+    │   │   ├── guards/
+    │   │   │   ├── auth.guard.ts
+    │   │   │   └── no-auth.guard.ts
+    │   │   ├── services/
+    │   │   │   └── auth.service.ts
+    │   │   ├── auth.module.ts
+    │   │   └── auth.routes.ts
+    │   │
+    │   ├── core/
+    │   │   ├── guards/
+    │   │   │   └── auth.guard.ts
+    │   │   ├── interceptors/
+    │   │   │   ├── auth-interceptor.ts
+    │   │   │   ├── error-interceptor.ts
+    │   │   │   └── loading-interceptor.ts
+    │   │   └── core.module.ts
+    │   │
+    │   ├── modules/
+    │   │   ├── desafios/
+    │   │   │   ├── components/
+    │   │   │   │   ├── crear-desafio/
+    │   │   │   │   │   ├── crear-desafio.component.html
+    │   │   │   │   │   ├── crear-desafio.component.scss
+    │   │   │   │   │   └── crear-desafio.component.ts
+    │   │   │   │   ├── detalle-desafio/
+    │   │   │   │   │   ├── detalle-desafio.component.html
+    │   │   │   │   │   ├── detalle-desafio.component.scss
+    │   │   │   │   │   └── detalle-desafio.component.ts
+    │   │   │   │   └── lista-desafios/
+    │   │   │   │       ├── lista-desafios.component.html
+    │   │   │   │       ├── lista-desafios.component.scss
+    │   │   │   │       └── lista-desafios.component.ts
+    │   │   │   ├── dto/
+    │   │   │   │   └── crear-desafio.dto.ts
+    │   │   │   ├── services/
+    │   │   │   │   └── desafios.service.ts
+    │   │   │   ├── desafios-routing.module.ts
+    │   │   │   ├── desafios.module.ts
+    │   │   │   └── desafios.routes.ts
+    │   │   │
+    │   │   ├── progressos/
+    │   │   │   ├── components/
+    │   │   │   │   ├── mis-progressos/
+    │   │   │   │   │   ├── mis-progressos.component.html
+    │   │   │   │   │   ├── mis-progressos.component.scss
+    │   │   │   │   │   └── mis-progressos.component.ts
+    │   │   │   │   └── registrar-progreso/
+    │   │   │   │       ├── registrar-progreso.component.html
+    │   │   │   │       ├── registrar-progreso.component.scss
+    │   │   │   │       └── registrar-progreso.component.ts
+    │   │   │   ├── services/
+    │   │   │   │   └── progressos.service.ts
+    │   │   │   └── progressos.module.ts
+    │   │   │
+    │   │   └── rankings/
+    │   │       ├── components/
+    │   │       │   └── ranking-global/
+    │   │       │       ├── ranking-global.component.html
+    │   │       │       ├── ranking-global.component.scss
+    │   │       │       └── ranking-global.component.ts
+    │   │       ├── services/
+    │   │       │   └── rankings.service.ts
+    │   │       └── rankings.module.ts
+    │   │
+    │   └── shared/
+    │       ├── components/
+    │       │   ├── error-alert/
+    │       │   │   ├── error-alert.component.html
+    │       │   │   └── error-alert.component.ts
+    │       │   ├── footer/
+    │       │   │   ├── footer.component.html
+    │       │   │   ├── footer.component.scss
+    │       │   │   └── footer.component.ts
+    │       │   ├── loading-spinner/
+    │       │   │   ├── loading-spinner.component.html
+    │       │   │   ├── loading-spinner.component.scss
+    │       │   │   └── loading-spinner.component.ts
+    │       │   └── navbar/
+    │       │       ├── navbar.component.html
+    │       │       ├── navbar.component.scss
+    │       │       └── navbar.component.ts
+    │       └── models/
+    │           ├── comentario.model.ts
+    │           ├── desafio.model.ts
+    │           ├── progreso.model.ts
+    │           ├── ranking.model.ts
+    │           ├── usuario.model.ts
+    │           ├── shared.model.ts
+    │           ├── paged-response.model.ts
+    │           └── index.ts
+    │
+    └── environments/
+        ├── environment.ts
+        ├── environment.port.ts
+        └── environment.model.ts
