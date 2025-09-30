@@ -1,28 +1,63 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../../../../enviroments/environment';
-import { Ranking,RankingDesafio } from '../../../../shared/models';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RankingsService } from '../../services/rankings.service'; // ← RankingsService (con 's')
+import { Ranking, RankingDesafio } from '../../../../shared/models';
 
-@Injectable({
-  providedIn: 'root'
+@Component({
+  standalone: true,
+  selector: 'app-ranking-global',
+  templateUrl: './ranking-global.component.html',
+  styleUrls: ['./ranking-global.component.scss'],
+  imports: [CommonModule, FormsModule]
 })
+export class RankingGlobalComponent implements OnInit {
+  loading = false;
+  error: string | null = null;
+  ranking: Ranking[] = [];
+  filtroTipo = 'todos';
+  vista = 'global';
+  rankingDesafio: RankingDesafio | null = null;
 
-export class RankingGlobalComponent {
-  private apiUrl = `${environment.apiUrl}/rankings`;
+  constructor(private rankingsService: RankingsService) {} // ← RankingsService (con 's')
 
-  constructor(private http: HttpClient) { }
-
-  obtenerRankingGlobal(tipo: string = 'todos'): Observable<Ranking[]> {
-    let params = new HttpParams();
-    if (tipo !== 'todos') {
-      params = params.set('tipo', tipo);
-    }
-    
-    return this.http.get<Ranking[]>(`${this.apiUrl}/global`, { params });
+  ngOnInit(): void {
+    this.cargarRankingGlobal();
   }
 
-  obtenerRankingDesafio(desafioId: number): Observable<RankingDesafio> {
-    return this.http.get<RankingDesafio>(`${this.apiUrl}/desafio/${desafioId}`);
+  cargarRankingGlobal(): void {
+    this.loading = true;
+    this.error = null;
+    this.vista = 'global';
+    
+    this.rankingsService.obtenerRankingGlobal(this.filtroTipo).subscribe({
+      next: (ranking) => {
+        this.ranking = ranking;
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Error al cargar el ranking. Por favor, inténtalo de nuevo.';
+        this.loading = false;
+        console.error(err);
+      }
+    });
+  }
+
+  onFiltroChange(): void {
+    this.cargarRankingGlobal();
+  }
+
+  getRowClass(index: number): string {
+    if (index === 0) return 'bg-yellow-50';
+    if (index === 1) return 'bg-gray-50';
+    if (index === 2) return 'bg-orange-50';
+    return 'bg-white';
+  }
+
+  getMedal(index: number): string {
+    if (index === 0) return '🥇';
+    if (index === 1) return '🥈';
+    if (index === 2) return '🥉';
+    return '';
   }
 }

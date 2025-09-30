@@ -3,6 +3,13 @@
   min-height: 100vh;
 }
 
+// Estilos para el dropdown
+.dropdown-open {
+  .dropdown-menu {
+    display: block;
+  }
+}
+
 // Asegurar que el contenido se vea bien en móviles
 @media (max-width: 768px) {
   aside {
@@ -17,4 +24,14 @@
   .ml-64 {
     margin-left: 0;
   }
+}
+
+// Overlay para cerrar dropdown al hacer click fuera
+.dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
 }
