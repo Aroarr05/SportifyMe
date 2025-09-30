@@ -1,21 +1,21 @@
-// src/app/app.routes.ts
+// app.routes.ts
 import { Routes } from '@angular/router';
 import { AuthGuard } from './auth/guards/auth.guard';
 import { NoAuthGuard } from './auth/guards/no-auth.guard';
 
 export const routes: Routes = [
-  // Rutas de autenticación (sin layout)
-  {
-    path: 'auth',
-    loadComponent: () => import('./auth/components/login/login.component').then(m => m.LoginComponent),
-    canActivate: [NoAuthGuard]
-  },
-  
-  // Rutas principales (CON layout)
+  // TODAS las rutas usan el layout
   {
     path: '',
     loadComponent: () => import('./shared/components/layout/layout.component').then(m => m.LayoutComponent),
     children: [
+      // Ruta de auth dentro del layout
+      {
+        path: 'auth',
+        loadComponent: () => import('./auth/components/login/login.component').then(m => m.LoginComponent),
+        canActivate: [NoAuthGuard]
+      },
+      // Resto de rutas
       {
         path: 'desafios',
         children: [
@@ -25,7 +25,8 @@ export const routes: Routes = [
           },
           {
             path: 'crear',
-            loadComponent: () => import('./modules/desafios/components/crear-desafio/crear-desafio.component').then(m => m.CrearDesafioComponent)
+            loadComponent: () => import('./modules/desafios/components/crear-desafio/crear-desafio.component').then(m => m.CrearDesafioComponent),
+            canActivate: [AuthGuard]
           },
           {
             path: ':id',
@@ -35,18 +36,17 @@ export const routes: Routes = [
       },
       {
         path: 'progresos',
-        loadComponent: () => import('./modules/progresos/components/mis-progresos/mis-progresos.component').then(m => m.MisProgresosComponent)
+        loadComponent: () => import('./modules/progresos/components/mis-progresos/mis-progresos.component').then(m => m.MisProgresosComponent),
+        canActivate: [AuthGuard]
       },
       {
         path: 'rankings',
         loadComponent: () => import('./modules/rankings/components/ranking-global/ranking-global.component').then(m => m.RankingGlobalComponent)
       },
+      // Ruta por defecto
       { path: '', redirectTo: 'desafios', pathMatch: 'full' }
-    ],
-    canActivate: [AuthGuard]
+    ]
   },
-  
-  // Rutas por defecto
-  { path: '', redirectTo: 'desafios', pathMatch: 'full' },
+  // Redirecciones
   { path: '**', redirectTo: 'desafios' }
 ];

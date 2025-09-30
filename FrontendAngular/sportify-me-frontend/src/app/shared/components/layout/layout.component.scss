@@ -1,0 +1,20 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+// Asegurar que el contenido se vea bien en móviles
+@media (max-width: 768px) {
+  aside {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    
+    &.mobile-open {
+      transform: translateX(0);
+    }
+  }
+  
+  .ml-64 {
+    margin-left: 0;
+  }
+}

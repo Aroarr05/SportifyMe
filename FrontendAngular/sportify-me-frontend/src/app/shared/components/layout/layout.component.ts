@@ -1,33 +1,35 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
-import { NavbarComponent } from '../navbar/navbar.component';
-import { FooterComponent } from '../footer/footer.component'; // ← Tu footer
-import { AuthService } from '../../../auth/services/auth.service';
+import { RouterModule } from '@angular/router';
 
 @Component({
-  selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, NavbarComponent, FooterComponent],
-  template: `
-    <div class="min-h-screen flex flex-col bg-gray-50">
-      <!-- Navbar -->
-      @if (authService.isLoggedIn()) {
-        <app-navbar />
-      }
-
-      <!-- Contenido principal -->
-      <main class="flex-grow container mx-auto px-4 py-6">
-        <router-outlet />
-      </main>
-
-      <!-- Footer -->
-      @if (authService.isLoggedIn()) {
-        <app-footer />
-      }
-    </div>
-  `
+  selector: 'app-layout',
+  templateUrl: './layout.component.html',
+  styleUrls: ['./layout.component.scss'],
+  imports: [CommonModule, RouterModule]
 })
 export class LayoutComponent {
-  constructor(public authService: AuthService) {}
+  usuarioLogueado = { nombre: 'Juan Pérez', email: 'juan@ejemplo.com' };
+  isLoggedIn = true;
+
+  menuItems = [
+    { path: '/desafios', label: 'Desafíos', icon: '🏆' },
+    { path: '/ranking', label: 'Ranking', icon: '📊' },
+    { path: '/progreso', label: 'Mi Progreso', icon: '📈' },
+    { path: '/comunidad', label: 'Comunidad', icon: '👥' },
+    { path: '/perfil', label: 'Mi Perfil', icon: '👤' }
+  ];
+
+  // Método para obtener las iniciales del usuario
+  getInicialesUsuario(): string {
+    if (!this.usuarioLogueado?.nombre) return 'U';
+    
+    return this.usuarioLogueado.nombre
+      .split(' ')
+      .map(palabra => palabra.charAt(0))
+      .join('')
+      .toUpperCase()
+      .substring(0, 2);
+  }
 }
