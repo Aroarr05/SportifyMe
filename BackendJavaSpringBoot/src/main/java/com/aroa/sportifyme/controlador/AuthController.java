@@ -1,4 +1,4 @@
-package com.aroa.sportifyme.seguridad;
+package com.aroa.sportifyme.controlador;
 
 import com.aroa.sportifyme.modelo.Usuario;
 import com.aroa.sportifyme.seguridad.dto.LoginDTO;

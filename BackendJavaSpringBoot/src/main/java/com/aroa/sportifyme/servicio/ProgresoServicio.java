@@ -1,7 +1,7 @@
 package com.aroa.sportifyme.servicio;
 
 
-import com.aroa.sportifyme.dto.RankingDTO;
+import com.aroa.sportifyme.seguridad.dto.RankingDTO;
 import com.aroa.sportifyme.modelo.*;
 import com.aroa.sportifyme.repository.ProgresoRepository;
 import com.aroa.sportifyme.seguridad.dto.ProgresoDTO;

@@ -1,4 +1,4 @@
-package com.aroa.sportifyme.dto;
+package com.aroa.sportifyme.seguridad.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
