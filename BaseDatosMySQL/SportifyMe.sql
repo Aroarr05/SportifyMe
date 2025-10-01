@@ -1,3 +1,6 @@
+CREATE DATABASE SportifyMe;
+USE SportifyMe;
+
 -- Tabla de Usuarios (completa)
 CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -20,7 +23,7 @@ CREATE TABLE desafios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(100) NOT NULL,
     descripcion TEXT,
-    tipo_actividad ENUM('correr', 'ciclismo', 'natación', 'gimnasio', 'otros') NOT NULL,
+    tipo_actividad ENUM('correr', 'ciclismo', 'natacion', 'gimnasio', 'otros') NOT NULL,
     objetivo DECIMAL(10,2),
     unidad_objetivo VARCHAR(20),
     fecha_inicio DATETIME NOT NULL,
@@ -105,6 +108,7 @@ CREATE TABLE notificaciones (
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
+-- Vista de Ranking Corregida
 CREATE VIEW ranking_desafios AS
 SELECT 
     p.desafio_id,
@@ -112,15 +116,16 @@ SELECT
     u.nombre,
     u.avatar_url,
     CASE 
-        WHEN d.tipo_actividad IN ('correr', 'ciclismo', 'natación') THEN MIN(p.valor_actual) -- Para actividades de tiempo
-        ELSE MAX(p.valor_actual) -- Para actividades de distancia/repeticiones
+        WHEN d.tipo_actividad IN ('correr', 'ciclismo', 'natacion') THEN MIN(p.valor_actual)
+        ELSE MAX(p.valor_actual)
     END AS progreso_relevante,
     RANK() OVER (
         PARTITION BY p.desafio_id 
-        ORDER BY CASE 
-            WHEN d.tipo_actividad IN ('correr', 'ciclismo', 'natación') THEN p.valor_actual ASC -- Menor es mejor
-            ELSE p.valor_actual DESC -- Mayor es mejor
-        END
+        ORDER BY 
+            CASE 
+                WHEN d.tipo_actividad IN ('correr', 'ciclismo', 'natacion') THEN p.valor_actual
+                ELSE -p.valor_actual  -- Truco para ordenar DESC usando negativo
+            END
     ) AS posicion,
     d.titulo AS desafio_titulo,
     d.tipo_actividad
