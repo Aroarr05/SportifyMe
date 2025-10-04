@@ -1,4 +1,4 @@
-// src/environments/environment.model.ts
+
 export interface Environment {
   production: boolean;
   apiUrl: string;

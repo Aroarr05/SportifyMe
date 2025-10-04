@@ -1,27 +1,22 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../../enviroments/environment';
-import { Ranking, RankingDesafio } from '../../../shared/models/ranking.model';
+import { environment } from '../../../../environments/environment';
+import { Ranking } from '../../../shared/models/ranking.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RankingsService {
-  private apiUrl = `${environment.apiUrl}/rankings`;
+  // ✅ CORREGIDO: Usa el endpoint REAL que existe en tu backend
+  private apiUrl = `${environment.apiUrl}/progresos`;
 
   constructor(private http: HttpClient) { }
 
-  obtenerRankingGlobal(tipo: string = 'todos'): Observable<Ranking[]> {
-    let params = new HttpParams();
-    if (tipo !== 'todos') {
-      params = params.set('tipo', tipo);
-    }
-    
-    return this.http.get<Ranking[]>(`${this.apiUrl}/global`, { params });
+  // ✅ CORREGIDO: Este es el endpoint que SÍ existe en tu Spring Boot
+  obtenerRankingDesafio(desafioId: number): Observable<Ranking[]> {
+    return this.http.get<Ranking[]>(`${this.apiUrl}/ranking/${desafioId}`);
   }
 
-  obtenerRankingDesafio(desafioId: number): Observable<RankingDesafio> {
-    return this.http.get<RankingDesafio>(`${this.apiUrl}/desafio/${desafioId}`);
-  }
+ 
 }
