@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -49,8 +49,9 @@ public class Usuario {
     @Enumerated(EnumType.STRING)
     private Genero genero;
 
+    // ✅ CORREGIDO: Cambiar Double por BigDecimal
     @Column(precision = 5, scale = 2)
-    private Double peso;
+    private BigDecimal peso;
 
     private Integer altura;
 

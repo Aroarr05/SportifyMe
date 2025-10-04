@@ -2,8 +2,6 @@ package com.aroa.sportifyme.controlador;
 
 import com.aroa.sportifyme.modelo.Comentario;
 import com.aroa.sportifyme.servicio.ComentarioServicio;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -13,13 +11,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/comentarios")
 @RequiredArgsConstructor
-@Tag(name = "Comentarios", description = "Gestión de comentarios en desafíos")
 public class ComentarioController {
 
     private final ComentarioServicio comentarioServicio;
 
     @PostMapping("/desafio/{desafioId}")
-    @Operation(summary = "Crear un nuevo comentario")
     public ResponseEntity<Comentario> crearComentario(
             @PathVariable Long desafioId,
             @RequestBody String contenido,
@@ -34,7 +30,6 @@ public class ComentarioController {
     }
 
     @GetMapping("/desafio/{desafioId}")
-    @Operation(summary = "Obtener comentarios de un desafío")
     public ResponseEntity<List<Comentario>> obtenerComentariosPorDesafio(
             @PathVariable Long desafioId) {
 
@@ -43,7 +38,6 @@ public class ComentarioController {
     }
 
     @DeleteMapping("/{comentarioId}")
-    @Operation(summary = "Eliminar un comentario")
     public ResponseEntity<Void> eliminarComentario(
             @PathVariable Long comentarioId,
             Authentication authentication) {

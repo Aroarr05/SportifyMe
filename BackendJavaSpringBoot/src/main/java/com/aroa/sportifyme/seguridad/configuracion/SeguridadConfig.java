@@ -3,7 +3,7 @@ package com.aroa.sportifyme.seguridad.configuracion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod; // <-- Esta es la importación que faltaba
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -16,6 +16,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
 import com.aroa.sportifyme.seguridad.jwt.JwtAuthenticationFilter;
 
 @Configuration
@@ -29,24 +30,53 @@ public class SeguridadConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/api/auth/**",
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html"
-                        ).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/desafios/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/desafios/**").hasRole("USER")
-                        .requestMatchers("/api/participaciones/**").authenticated()
-                        .requestMatchers("/api/progresos/**").authenticated()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .anyRequest().authenticated()
-                )
-                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+            // Desactivar CSRF para APIs REST
+            .csrf(csrf -> csrf.disable())
+            
+            // Configurar CORS
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            
+            // Configurar autorizaciones
+            .authorizeHttpRequests(auth -> auth
+                // Rutas PÚBLICAS (sin autenticación)
+             .requestMatchers(
+                "/",                    // ✅ Página principal
+                "/favicon.ico",        // ✅ Icono
+                "/health",             // ✅ Health check
+                "/api/test",           // ✅ Endpoint de prueba
+                "/api/auth/**",        // ✅ Autenticación
+                "/actuator/health",    // ✅ Health de Spring Boot
+                "/error"               // ✅ Páginas de error
+            ).permitAll()
+                
+                // Desafíos: lectura pública, escritura para usuarios autenticados
+                .requestMatchers(HttpMethod.GET, "/api/desafios/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/desafios/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/desafios/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/desafios/**").hasRole("ADMIN")
+                
+                // Usuarios: perfil público, gestión para admins
+                .requestMatchers(HttpMethod.GET, "/api/usuarios/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/usuarios/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/usuarios/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/usuarios/**").hasRole("ADMIN")
+                
+                // Participaciones y progresos requieren autenticación
+                .requestMatchers("/api/participaciones/**").authenticated()
+                .requestMatchers("/api/progresos/**").authenticated()
+                
+                // Admin solo para administradores
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                
+                // Cualquier otra ruta requiere autenticación
+                .anyRequest().authenticated()
+            )
+            
+            // Configurar sesiones sin estado (STATELESS para JWT)
+            .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            
+            // Añadir filtro JWT antes del filtro de autenticación
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -55,10 +85,13 @@ public class SeguridadConfig {
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
+        
+        // Configuración CORS para desarrollo
         config.setAllowCredentials(true);
-        config.addAllowedOriginPattern("*");
+        config.addAllowedOriginPattern("*"); // En producción, especifica dominios
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
+        
         source.registerCorsConfiguration("/**", config);
         return source;
     }

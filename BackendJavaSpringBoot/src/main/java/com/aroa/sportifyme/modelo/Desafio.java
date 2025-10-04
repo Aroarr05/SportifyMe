@@ -2,6 +2,7 @@ package com.aroa.sportifyme.modelo;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -22,9 +23,11 @@ public class Desafio {
     @Column(name = "tipo_actividad", nullable = false)
     private TipoActividad tipoActividad;
 
+    // ✅ CORREGIDO: Cambiar Double por BigDecimal
     @Column(precision = 10, scale = 2)
-    private Double objetivo;
+    private BigDecimal objetivo;
 
+    // ✅ CORREGIDO: Cambiar BigDecimal por String (para unidades como "km", "min", "kg")
     @Column(name = "unidad_objetivo", length = 20)
     private String unidadObjetivo;
 

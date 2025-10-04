@@ -2,6 +2,7 @@ package com.aroa.sportifyme.modelo;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -12,8 +13,9 @@ public class Progreso {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, precision = 10, scale = 2)
-    private Double valorActual;
+    // ✅ CORREGIDO: Cambiar Double por BigDecimal
+    @Column(name = "valor_actual", nullable = false, precision = 10, scale = 2)
+    private BigDecimal valorActual;
 
     @Column(nullable = false, length = 20)
     private String unidad;
@@ -41,7 +43,8 @@ public class Progreso {
         if (!this.unidad.equals(this.desafio.getUnidadObjetivo())) {
             throw new IllegalArgumentException("Unidad no coincide con el desafío");
         }
-        if (this.valorActual <= 0) {
+        // ✅ CORREGIDO: Validación para BigDecimal
+        if (this.valorActual.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("El valor debe ser positivo");
         }
     }
