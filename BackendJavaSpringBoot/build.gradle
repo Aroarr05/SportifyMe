@@ -2,10 +2,10 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.5.3'
     id 'io.spring.dependency-management' version '1.1.7'
-    id 'io.freefair.lombok' version '8.6' // Plugin para Lombok (genera getters/setters automáticos)
+    id 'io.freefair.lombok' version '8.6'
 }
 
-group = 'com.aroa'
+group = 'com.aroa.sportifyme'
 version = '0.0.1-SNAPSHOT'
 
 java {
@@ -20,37 +20,56 @@ repositories {
 
 dependencies {
     // Spring Boot Starters
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-
-    // Base de datos
-    runtimeOnly 'com.mysql:mysql-connector-j'
-
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    
+    // Base de datos H2 (en memoria - para desarrollo)
+    runtimeOnly 'com.h2database:h2'
+    
+    // Si necesitas MySQL más tarde, descomenta esta línea y comenta la de H2:
+    // runtimeOnly 'com.mysql:mysql-connector-j'
+    
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+    
+    // Documentación API
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+    
+    // Messaging (para WebSocket)
     implementation 'org.springframework:spring-messaging'
-
-    // Lombok (getters/setters automáticos)
+    
+    // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+    
     // Testing
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-    // Dependencias para JWT
-    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
-    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
-
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-    // BCrypt para cifrar contraseñas (opcional, ya incluido en Spring Security)
-    implementation 'org.springframework.security:spring-security-crypto'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+// Configuración para mejorar el rendimiento de construcción
+tasks.named('compileJava') {
+    options.encoding = 'UTF-8'
+    options.compilerArgs += ['-parameters']
+}
+
+// Tarea para ejecutar la aplicación más rápido
+bootRun {
+    systemProperties System.properties
+}
+
+// Para generar un jar ejecutable
+bootJar {
+    archiveFileName = "${project.name}.jar"
+    launchScript()
 }
