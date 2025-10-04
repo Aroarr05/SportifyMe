@@ -1,20 +1,17 @@
 <div class="container mx-auto px-4 py-8">
-  <h2 class="text-2xl font-bold text-gray-800 mb-6">Ranking Global</h2>
+  <h2 class="text-2xl font-bold text-gray-800 mb-6">🏆 Ranking por Desafío</h2>
   
-  <!-- Filtro -->
+  <!-- Selector de Desafío (REEMPLAZA el filtro por tipo) -->
   <div class="mb-6">
-    <label class="block text-sm font-medium text-gray-700 mb-2">Filtrar por tipo de desafío</label>
+    <label class="block text-sm font-medium text-gray-700 mb-2">Seleccionar Desafío</label>
     <select 
-      [(ngModel)]="filtroTipo" 
-      (change)="onFiltroChange()"
+      [(ngModel)]="desafioId" 
+      (change)="cargarRankingDesafio()"
       class="w-full md:w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
     >
-      <option value="todos">Todos los desafíos</option>
-      <option value="CARRERA">Carrera</option>
-      <option value="CICLISMO">Ciclismo</option>
-      <option value="NATACION">Natación</option>
-      <option value="GIMNASIO">Gimnasio</option>
-      <option value="OTRO">Otro</option>
+      <option value="1">Desafío 1 - Maratón 30km</option>
+      <option value="2">Desafío 2 - Ciclismo 100km</option>
+      <option value="3">Desafío 3 - Natación 5km</option>
     </select>
   </div>
 
@@ -26,20 +23,20 @@
   <!-- Error State -->
   <div *ngIf="error && !loading" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
     <p>{{ error }}</p>
-    <button (click)="cargarRankingGlobal()" class="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+    <button (click)="cargarRankingDesafio()" class="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
       Reintentar
     </button>
   </div>
 
   <!-- Empty State -->
-  <div *ngIf="!loading && !error && ranking.length === 0 && vista === 'global'" class="text-center py-8">
-    <p class="text-gray-500 text-lg">No hay datos de ranking disponibles.</p>
+  <div *ngIf="!loading && !error && ranking.length === 0" class="text-center py-8">
+    <p class="text-gray-500 text-lg">No hay participantes en este desafío.</p>
   </div>
 
-  <!-- Vista Global -->
-  <div *ngIf="!loading && !error && vista === 'global' && ranking.length > 0" class="bg-white rounded-lg shadow-md overflow-hidden">
+  <!-- Tabla de Ranking SIMPLIFICADA -->
+  <div *ngIf="!loading && !error && ranking.length > 0" class="bg-white rounded-lg shadow-md overflow-hidden">
     <div class="bg-blue-500 text-white px-6 py-4">
-      <h3 class="text-xl font-semibold">Top Participantes - Ranking Global</h3>
+      <h3 class="text-xl font-semibold">Ranking del Desafío</h3>
     </div>
     
     <div class="overflow-x-auto">
@@ -53,13 +50,7 @@
               Usuario
             </th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Puntuación
-            </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Desafíos Completados
-            </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Progreso Total
+              Progreso
             </th>
           </tr>
         </thead>
@@ -70,73 +61,13 @@
           >
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
               <span *ngIf="i < 3" class="text-2xl">{{ getMedal(i) }}</span>
-              <span *ngIf="i >= 3">{{ item.posicion || i + 1 }}</span>
+              <span *ngIf="i >= 3">{{ i + 1 }}</span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              {{ item.usuario.nombre }}
+              {{ item.usuario }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">
-              {{ item.puntuacion }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              {{ item.desafiosCompletados }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              {{ item.progresoTotal }}%
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Vista por Desafío -->
-  <div *ngIf="!loading && !error && vista === 'por-desafio' && rankingDesafio" class="bg-white rounded-lg shadow-md overflow-hidden">
-    <div class="bg-green-500 text-white px-6 py-4">
-      <h3 class="text-xl font-semibold">Ranking - {{ rankingDesafio.nombreDesafio }}</h3>
-      <button 
-        (click)="cargarRankingGlobal()"
-        class="mt-2 px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700"
-      >
-        ← Volver al ranking global
-      </button>
-    </div>
-    
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Posición
-            </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Usuario
-            </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Puntuación
-            </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Progreso
-            </th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          <tr 
-            *ngFor="let item of rankingDesafio.ranking; let i = index" 
-            [class]="getRowClass(i)"
-          >
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-              <span *ngIf="i < 3" class="text-2xl">{{ getMedal(i) }}</span>
-              <span *ngIf="i >= 3">{{ item.posicion || i + 1 }}</span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              {{ item.usuario.nombre }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">
-              {{ item.puntuacion }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              {{ item.progresoTotal }}%
+              {{ item.progresoTotal }} puntos
             </td>
           </tr>
         </tbody>
