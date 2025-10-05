@@ -2,6 +2,7 @@ package com.aroa.sportifyme.modelo;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnore;  // ← IMPORTA ESTO
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -23,11 +24,9 @@ public class Desafio {
     @Column(name = "tipo_actividad", nullable = false)
     private TipoActividad tipoActividad;
 
-    // ✅ CORREGIDO: Cambiar Double por BigDecimal
     @Column(precision = 10, scale = 2)
     private BigDecimal objetivo;
 
-    // ✅ CORREGIDO: Cambiar BigDecimal por String (para unidades como "km", "min", "kg")
     @Column(name = "unidad_objetivo", length = 20)
     private String unidadObjetivo;
 
@@ -39,6 +38,7 @@ public class Desafio {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creador_id", nullable = false)
+    @JsonIgnore  // ← SOLO AÑADE ESTA LÍNEA
     private Usuario creador;
 
     @Column(name = "es_publico", nullable = false)

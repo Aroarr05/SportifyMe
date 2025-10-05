@@ -19,6 +19,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/progresos")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class ProgresoController {
 
     private final ProgresoServicio progresoServicio;
