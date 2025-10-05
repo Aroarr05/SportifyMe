@@ -1,9 +1,13 @@
+-- 1. Eliminar la base de datos existente (si existe)
+-- DROP DATABASE IF EXISTS SportifyMe;
+
+-- 2. Crear la base de datos
 CREATE DATABASE SportifyMe;
 USE SportifyMe;
 
--- Tabla de Usuarios (completa)
+-- 3. Crear tablas con tipos de datos consistentes (TODOS BIGINT)
 CREATE TABLE usuarios (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     contraseña VARCHAR(255) NOT NULL,
@@ -18,9 +22,8 @@ CREATE TABLE usuarios (
     ultimo_login DATETIME
 );
 
--- Tabla de Desafíos (completa)
 CREATE TABLE desafios (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(100) NOT NULL,
     descripcion TEXT,
     tipo_actividad ENUM('correr', 'ciclismo', 'natacion', 'gimnasio', 'otros') NOT NULL,
@@ -28,7 +31,7 @@ CREATE TABLE desafios (
     unidad_objetivo VARCHAR(20),
     fecha_inicio DATETIME NOT NULL,
     fecha_fin DATETIME NOT NULL,
-    creador_id INT NOT NULL,
+    creador_id BIGINT NOT NULL,
     es_publico BOOLEAN DEFAULT TRUE,
     imagen_url VARCHAR(255),
     dificultad ENUM('PRINCIPIANTE', 'INTERMEDIO', 'AVANZADO'),
@@ -36,36 +39,33 @@ CREATE TABLE desafios (
     FOREIGN KEY (creador_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
--- Tabla de Participación (sin cambios)
 CREATE TABLE participaciones (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    usuario_id INT NOT NULL,
-    desafio_id INT NOT NULL,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id BIGINT NOT NULL,
+    desafio_id BIGINT NOT NULL,
     fecha_union DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
     FOREIGN KEY (desafio_id) REFERENCES desafios(id) ON DELETE CASCADE,
     UNIQUE KEY (usuario_id, desafio_id)
 );
 
--- Tabla de Progresos (mejorada)
 CREATE TABLE progresos (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    usuario_id INT NOT NULL,
-    desafio_id INT NOT NULL,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id BIGINT NOT NULL,
+    desafio_id BIGINT NOT NULL,
     valor_actual DECIMAL(10,2) NOT NULL,
-    unidad VARCHAR(20) NOT NULL, -- Nueva columna
+    unidad VARCHAR(20) NOT NULL,
     fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
     comentario TEXT,
-    dispositivo VARCHAR(50), -- Ej: 'APP_IOS', 'APP_ANDROID', 'WEARABLE'
+    dispositivo VARCHAR(50),
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
     FOREIGN KEY (desafio_id) REFERENCES desafios(id) ON DELETE CASCADE
 );
 
--- Tabla de Comentarios (mejorada)
 CREATE TABLE comentarios (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    usuario_id INT NOT NULL,
-    desafio_id INT NOT NULL,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id BIGINT NOT NULL,
+    desafio_id BIGINT NOT NULL,
     contenido TEXT NOT NULL,
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
     editado BOOLEAN DEFAULT FALSE,
@@ -74,9 +74,8 @@ CREATE TABLE comentarios (
     FOREIGN KEY (desafio_id) REFERENCES desafios(id) ON DELETE CASCADE
 );
 
--- Tabla de Logros (nueva)
 CREATE TABLE logros (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     descripcion TEXT,
     icono_url VARCHAR(255),
@@ -85,21 +84,19 @@ CREATE TABLE logros (
     categoria ENUM('PROGRESO', 'SOCIAL', 'DEDICACION')
 );
 
--- Tabla de Logros de Usuario (nueva)
 CREATE TABLE usuario_logros (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    usuario_id INT NOT NULL,
-    logro_id INT NOT NULL,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id BIGINT NOT NULL,
+    logro_id BIGINT NOT NULL,
     fecha_obtencion DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
     FOREIGN KEY (logro_id) REFERENCES logros(id) ON DELETE CASCADE,
-    UNIQUE KEY (usuario_id, logro_id)  -- Evitar duplicados
+    UNIQUE KEY (usuario_id, logro_id)
 );
 
--- Tabla de Notificaciones (nueva)
 CREATE TABLE notificaciones (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    usuario_id INT NOT NULL,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id BIGINT NOT NULL,
     tipo ENUM('LOGRO', 'COMENTARIO', 'PROGRESO', 'DESAFIO', 'SISTEMA') NOT NULL,
     mensaje TEXT NOT NULL,
     enlace VARCHAR(255),
@@ -108,32 +105,11 @@ CREATE TABLE notificaciones (
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
--- Vista de Ranking Corregida
-CREATE VIEW ranking_desafios AS
-SELECT 
-    p.desafio_id,
-    p.usuario_id,
-    u.nombre,
-    u.avatar_url,
-    CASE 
-        WHEN d.tipo_actividad IN ('correr', 'ciclismo', 'natacion') THEN MIN(p.valor_actual)
-        ELSE MAX(p.valor_actual)
-    END AS progreso_relevante,
-    RANK() OVER (
-        PARTITION BY p.desafio_id 
-        ORDER BY 
-            CASE 
-                WHEN d.tipo_actividad IN ('correr', 'ciclismo', 'natacion') THEN p.valor_actual
-                ELSE -p.valor_actual  -- Truco para ordenar DESC usando negativo
-            END
-    ) AS posicion,
-    d.titulo AS desafio_titulo,
-    d.tipo_actividad
-FROM 
-    progresos p
-JOIN 
-    usuarios u ON p.usuario_id = u.id
-JOIN 
-    desafios d ON p.desafio_id = d.id
-GROUP BY 
-    p.desafio_id, p.usuario_id, u.nombre, u.avatar_url, d.titulo, d.tipo_actividad;
+-- 4. Insertar datos de prueba
+INSERT INTO usuarios (nombre, email, contraseña) VALUES 
+('Usuario Demo', 'demo@sportifyme.com', '$2a$10$TuHashDeContraseña'),
+('Juan Pérez', 'juan@email.com', '$2a$10$TuHashDeContraseña');
+
+INSERT INTO desafios (titulo, descripcion, tipo_actividad, objetivo, unidad_objetivo, fecha_inicio, fecha_fin, creador_id, dificultad) VALUES 
+('Maratón Mensual', 'Correr 100km en un mes', 'correr', 100.00, 'km', NOW(), DATE_ADD(NOW(), INTERVAL 30 DAY), 1, 'INTERMEDIO'),
+('Reto Ciclismo', '500km en bicicleta', 'ciclismo', 500.00, 'km', NOW(), DATE_ADD(NOW(), INTERVAL 45 DAY), 1, 'AVANZADO');

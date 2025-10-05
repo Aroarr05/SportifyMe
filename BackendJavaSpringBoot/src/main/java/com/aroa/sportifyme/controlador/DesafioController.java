@@ -10,26 +10,39 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/desafios")
+@CrossOrigin(origins = "http://localhost:4200") // ✅ AÑADIR CORS
 public class DesafioController {
 
     private final DesafioServicio desafioServicio;
 
-    // Inyección por constructor (recomendado)
     public DesafioController(DesafioServicio desafioServicio) {
         this.desafioServicio = desafioServicio;
     }
 
     @GetMapping
-    public List<Desafio> listarDesafios() {
-        return desafioServicio.listarTodos();
+    public ResponseEntity<?> listarDesafios() { // ✅ Cambiado a ResponseEntity<?>
+        try {
+            List<Desafio> desafios = desafioServicio.listarTodos();
+            return ResponseEntity.ok(desafios);
+        } catch (Exception e) {
+            e.printStackTrace(); // ✅ Para ver el error en consola
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al obtener desafíos: " + e.getMessage());
+        }
     }
 
     @PostMapping
-    public ResponseEntity<Desafio> crearDesafio(
+    public ResponseEntity<?> crearDesafio( // ✅ Cambiado a ResponseEntity<?>
             @RequestBody Desafio desafio,
             @RequestHeader("X-User-ID") Long creadorId) {
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(desafioServicio.crearDesafio(desafio, creadorId));
+        
+        try {
+            Desafio nuevoDesafio = desafioServicio.crearDesafio(desafio, creadorId);
+            return ResponseEntity.status(HttpStatus.CREATED).body(nuevoDesafio);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Error al crear desafío: " + e.getMessage());
+        }
     }
 }
