@@ -62,9 +62,9 @@
           <td class="py-3 px-4">
             <div class="flex items-center">
               <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">
-                {{ item.usuario?.nombre?.charAt(0) || 'U' }}
+                {{ item.usuario.nombre.charAt(0) || 'U' }}
               </div>
-              <span>{{ item.usuario?.nombre || 'Usuario Anónimo' }}</span>
+              <span>{{ item.usuario.nombre || 'Usuario Anónimo' }}</span>
             </div>
           </td>
           <td class="py-3 px-4 font-semibold">{{ item.puntuacion || 0 }} pts</td>
