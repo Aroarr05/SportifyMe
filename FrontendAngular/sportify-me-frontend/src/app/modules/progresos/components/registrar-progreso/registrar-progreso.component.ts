@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { ProgresosService } from '../../services/progresos.service';
-import { DesafiosService } from '../../../desafios/services/desafios.services';
+import { DesafiosService } from '../../../desafios/services/desafios.service';
 import { Desafio } from '../../../../shared/models';
 import { CrearProgresoDto, UnidadMedida } from '../../../../shared/models/progreso.model';
 

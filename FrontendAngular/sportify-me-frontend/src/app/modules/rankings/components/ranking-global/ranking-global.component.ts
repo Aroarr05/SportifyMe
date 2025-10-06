@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router'; // Añade Router
 import { RankingsService } from '../../services/rankings.service';
+import { AuthService } from '../../../../auth/services/auth.service';
 import { Ranking } from '../../../../shared/models';
 
 @Component({
@@ -15,15 +17,23 @@ export class RankingGlobalComponent implements OnInit {
   loading = false;
   error: string | null = null;
   ranking: Ranking[] = [];
-  desafioId: number = 1; // ✅ ID del desafío para filtrar
+  desafioId: number = 1;
 
-  constructor(private rankingsService: RankingsService) {}
+  constructor(
+    private rankingsService: RankingsService,
+    private authService: AuthService, // Inyecta AuthService
+    private router: Router // Inyecta Router
+  ) {}
 
   ngOnInit(): void {
-    this.cargarRankingDesafio(); // ✅ Cambiado a cargarRankingDesafio
+    // Verificar autenticación antes de cargar
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/auth/login']);
+      return;
+    }
+    this.cargarRankingDesafio();
   }
 
-  // ✅ CORREGIDO: Usa SOLO el método que SÍ existe
   cargarRankingDesafio(): void {
     this.loading = true;
     this.error = null;
@@ -35,14 +45,22 @@ export class RankingGlobalComponent implements OnInit {
         console.log('✅ Ranking cargado:', ranking);
       },
       error: (err: any) => {
-        this.error = 'Error al cargar el ranking. Por favor, inténtalo de nuevo.';
         this.loading = false;
-        console.error('❌ Error:', err);
+        
+        if (err.status === 403 || err.status === 401) {
+          this.error = 'Sesión expirada o sin permisos. Redirigiendo al login...';
+          this.authService.logout();
+          setTimeout(() => {
+            this.router.navigate(['/auth/login']);
+          }, 2000);
+        } else {
+          this.error = 'Error al cargar el ranking. Por favor, inténtalo de nuevo.';
+          console.error('❌ Error:', err);
+        }
       }
     });
   }
 
-  // ✅ Método para cambiar de desafío
   cambiarDesafio(nuevoId: number): void {
     this.desafioId = nuevoId;
     this.cargarRankingDesafio();
@@ -62,7 +80,8 @@ export class RankingGlobalComponent implements OnInit {
     return '';
   }
 
-  // ❌ ELIMINA estos métodos que NO se pueden usar:
-  // cargarRankingGlobal(): void { ... } // ❌ NO EXISTE
-  // onFiltroChange(): void { ... }      // ❌ NO EXISTE
+  // Método para reintentar
+  reintentar(): void {
+    this.cargarRankingDesafio();
+  }
 }

@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { DesafiosService } from '../../services/desafios.services';
+import { DesafiosService } from '../../services/desafios.service';
 import { Desafio } from '../../../../shared/models';
 import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
 import { ErrorAlertComponent } from '../../../../shared/components/error-alert/error-alert.component';

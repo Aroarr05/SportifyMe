@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { DesafiosService } from '../../services/desafios.services';
+import { DesafiosService } from '../../services/desafios.service';
 import { TipoActividad } from '../../../../shared/models';
 import { ErrorAlertComponent } from '../../../../shared/components/error-alert/error-alert.component';
 

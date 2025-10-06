@@ -1,77 +1,68 @@
-<div class="container mx-auto px-4 py-8">
-  <h2 class="text-2xl font-bold text-gray-800 mb-6">🏆 Ranking por Desafío</h2>
-  
-  <!-- Selector de Desafío (REEMPLAZA el filtro por tipo) -->
-  <div class="mb-6">
-    <label class="block text-sm font-medium text-gray-700 mb-2">Seleccionar Desafío</label>
+<div class="container mx-auto p-4">
+  <h2 class="text-2xl font-bold mb-4">🏆 Ranking del Desafío</h2>
+
+  <!-- Selector de desafío -->
+  <div class="mb-4">
+    <label class="block text-sm font-medium mb-2">Seleccionar Desafío:</label>
     <select 
       [(ngModel)]="desafioId" 
-      (change)="cargarRankingDesafio()"
-      class="w-full md:w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+      (change)="cambiarDesafio(desafioId)"
+      class="border rounded p-2"
     >
-      <option value="1">Desafío 1 - Maratón 30km</option>
-      <option value="2">Desafío 2 - Ciclismo 100km</option>
-      <option value="3">Desafío 3 - Natación 5km</option>
+      <option [value]="1">Desafío 1</option>
+      <option [value]="2">Desafío 2</option>
+      <option [value]="3">Desafío 3</option>
     </select>
   </div>
 
-  <!-- Loading State -->
-  <div *ngIf="loading" class="flex justify-center items-center p-8">
-    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center p-8">
+    <p>Cargando ranking...</p>
   </div>
 
-  <!-- Error State -->
+  <!-- Error -->
   <div *ngIf="error && !loading" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
     <p>{{ error }}</p>
-    <button (click)="cargarRankingDesafio()" class="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+    <button 
+      *ngIf="!error.includes('Redirigiendo')"
+      (click)="reintentar()" 
+      class="mt-2 bg-red-600 text-white px-4 py-2 rounded"
+    >
       Reintentar
     </button>
   </div>
 
-  <!-- Empty State -->
-  <div *ngIf="!loading && !error && ranking.length === 0" class="text-center py-8">
-    <p class="text-gray-500 text-lg">No hay participantes en este desafío.</p>
+  <!-- Ranking -->
+  <div *ngIf="!loading && !error && ranking.length > 0" class="overflow-x-auto">
+    <table class="min-w-full bg-white border">
+      <thead>
+        <tr class="bg-gray-100">
+          <th class="py-2 px-4 border">Posición</th>
+          <th class="py-2 px-4 border">Usuario</th>
+          <th class="py-2 px-4 border">Puntuación</th>
+          <th class="py-2 px-4 border">Progreso</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr 
+          *ngFor="let item of ranking; let i = index" 
+          [class]="getRowClass(i)"
+          class="border"
+        >
+          <td class="py-2 px-4 border text-center">
+            <span class="font-bold">{{ i + 1 }}</span>
+            <span class="ml-1">{{ getMedal(i) }}</span>
+          </td>
+          <td class="py-2 px-4 border">{{ item.usuario?.nombre || 'Usuario' }}</td>
+          <td class="py-2 px-4 border">{{ item.puntuacion || 0 }}</td>
+          <td class="py-2 px-4 border">{{ item.progresoTotal || 0 }}%</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
-  <!-- Tabla de Ranking SIMPLIFICADA -->
-  <div *ngIf="!loading && !error && ranking.length > 0" class="bg-white rounded-lg shadow-md overflow-hidden">
-    <div class="bg-blue-500 text-white px-6 py-4">
-      <h3 class="text-xl font-semibold">Ranking del Desafío</h3>
-    </div>
-    
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Posición
-            </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Usuario
-            </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Progreso
-            </th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          <tr 
-            *ngFor="let item of ranking; let i = index" 
-            [class]="getRowClass(i)"
-          >
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-              <span *ngIf="i < 3" class="text-2xl">{{ getMedal(i) }}</span>
-              <span *ngIf="i >= 3">{{ i + 1 }}</span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              {{ item.usuario }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">
-              {{ item.progresoTotal }} puntos
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <!-- Empty state -->
+  <div *ngIf="!loading && !error && ranking.length === 0" class="text-center p-8">
+    <p>No hay datos de ranking para este desafío.</p>
   </div>
 </div>
