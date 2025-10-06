@@ -4,8 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../../auth/services/auth.service';
-import { Ranking } from '../../../shared/models';
-
+import { RankingDesafio,Ranking } from '../../../shared/models';
 @Injectable({
   providedIn: 'root'
 })
@@ -14,10 +13,10 @@ export class RankingsService {
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService // Inyecta AuthService
+    private authService: AuthService
   ) { }
 
-  obtenerRankingDesafio(desafioId: number): Observable<Ranking[]> {
+  obtenerRankingDesafio(desafioId: number): Observable<RankingDesafio> {
     const token = this.authService.getToken();
     
     if (!token) {
@@ -29,6 +28,6 @@ export class RankingsService {
       'Content-Type': 'application/json'
     });
 
-    return this.http.get<Ranking[]>(`${this.apiUrl}/ranking/${desafioId}`, { headers });
+    return this.http.get<RankingDesafio>(`${this.apiUrl}/ranking/${desafioId}`, { headers });
   }
 }

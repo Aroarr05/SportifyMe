@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router'; // Añade Router
+import { Router } from '@angular/router';
 import { RankingsService } from '../../services/rankings.service';
 import { AuthService } from '../../../../auth/services/auth.service';
-import { Ranking } from '../../../../shared/models';
+import { RankingDesafio, Ranking } from '../../../../shared/models';
 
 @Component({
   standalone: true,
@@ -17,16 +17,16 @@ export class RankingGlobalComponent implements OnInit {
   loading = false;
   error: string | null = null;
   ranking: Ranking[] = [];
+  nombreDesafio: string = '';
   desafioId: number = 1;
 
   constructor(
     private rankingsService: RankingsService,
-    private authService: AuthService, // Inyecta AuthService
-    private router: Router // Inyecta Router
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    // Verificar autenticación antes de cargar
     if (!this.authService.isLoggedIn()) {
       this.router.navigate(['/auth/login']);
       return;
@@ -39,10 +39,11 @@ export class RankingGlobalComponent implements OnInit {
     this.error = null;
     
     this.rankingsService.obtenerRankingDesafio(this.desafioId).subscribe({
-      next: (ranking: Ranking[]) => {
-        this.ranking = ranking;
+      next: (rankingDesafio: RankingDesafio) => {
+        this.ranking = rankingDesafio.ranking || [];
+        this.nombreDesafio = rankingDesafio.nombreDesafio || `Desafío ${this.desafioId}`;
         this.loading = false;
-        console.log('✅ Ranking cargado:', ranking);
+        console.log('✅ Ranking cargado:', rankingDesafio);
       },
       error: (err: any) => {
         this.loading = false;
@@ -53,6 +54,9 @@ export class RankingGlobalComponent implements OnInit {
           setTimeout(() => {
             this.router.navigate(['/auth/login']);
           }, 2000);
+        } else if (err.status === 404) {
+          this.error = 'No se encontró el ranking para este desafío.';
+          this.ranking = [];
         } else {
           this.error = 'Error al cargar el ranking. Por favor, inténtalo de nuevo.';
           console.error('❌ Error:', err);
@@ -80,7 +84,6 @@ export class RankingGlobalComponent implements OnInit {
     return '';
   }
 
-  // Método para reintentar
   reintentar(): void {
     this.cargarRankingDesafio();
   }

@@ -1,5 +1,5 @@
 <div class="container mx-auto p-4">
-  <h2 class="text-2xl font-bold mb-4">🏆 Ranking del Desafío</h2>
+  <h2 class="text-2xl font-bold mb-4">🏆 {{ nombreDesafio || 'Ranking del Desafío' }}</h2>
 
   <!-- Selector de desafío -->
   <div class="mb-4">
@@ -7,17 +7,20 @@
     <select 
       [(ngModel)]="desafioId" 
       (change)="cambiarDesafio(desafioId)"
-      class="border rounded p-2"
+      class="border rounded p-2 w-full md:w-auto"
     >
       <option [value]="1">Desafío 1</option>
       <option [value]="2">Desafío 2</option>
       <option [value]="3">Desafío 3</option>
+      <option [value]="4">Desafío 4</option>
+      <option [value]="5">Desafío 5</option>
     </select>
   </div>
 
   <!-- Loading -->
   <div *ngIf="loading" class="text-center p-8">
-    <p>Cargando ranking...</p>
+    <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+    <p class="mt-2">Cargando ranking...</p>
   </div>
 
   <!-- Error -->
@@ -26,7 +29,7 @@
     <button 
       *ngIf="!error.includes('Redirigiendo')"
       (click)="reintentar()" 
-      class="mt-2 bg-red-600 text-white px-4 py-2 rounded"
+      class="mt-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded transition duration-200"
     >
       Reintentar
     </button>
@@ -34,35 +37,58 @@
 
   <!-- Ranking -->
   <div *ngIf="!loading && !error && ranking.length > 0" class="overflow-x-auto">
-    <table class="min-w-full bg-white border">
+    <table class="min-w-full bg-white border border-gray-300 rounded-lg overflow-hidden">
       <thead>
         <tr class="bg-gray-100">
-          <th class="py-2 px-4 border">Posición</th>
-          <th class="py-2 px-4 border">Usuario</th>
-          <th class="py-2 px-4 border">Puntuación</th>
-          <th class="py-2 px-4 border">Progreso</th>
+          <th class="py-3 px-4 border-b text-left">Posición</th>
+          <th class="py-3 px-4 border-b text-left">Usuario</th>
+          <th class="py-3 px-4 border-b text-left">Puntuación</th>
+          <th class="py-3 px-4 border-b text-left">Desafíos Completados</th>
+          <th class="py-3 px-4 border-b text-left">Progreso Total</th>
         </tr>
       </thead>
       <tbody>
         <tr 
           *ngFor="let item of ranking; let i = index" 
-          [class]="getRowClass(i)"
-          class="border"
+          [class]="getRowClass(i) + ' hover:bg-gray-50 transition duration-150'"
+          class="border-b"
         >
-          <td class="py-2 px-4 border text-center">
-            <span class="font-bold">{{ i + 1 }}</span>
-            <span class="ml-1">{{ getMedal(i) }}</span>
+          <td class="py-3 px-4 text-center">
+            <div class="flex items-center justify-center">
+              <span class="font-bold text-lg">{{ item.posicion || i + 1 }}</span>
+              <span class="ml-2 text-xl">{{ getMedal(i) }}</span>
+            </div>
           </td>
-          <td class="py-2 px-4 border">{{ item.usuario?.nombre || 'Usuario' }}</td>
-          <td class="py-2 px-4 border">{{ item.puntuacion || 0 }}</td>
-          <td class="py-2 px-4 border">{{ item.progresoTotal || 0 }}%</td>
+          <td class="py-3 px-4">
+            <div class="flex items-center">
+              <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">
+                {{ item.usuario?.nombre?.charAt(0) || 'U' }}
+              </div>
+              <span>{{ item.usuario?.nombre || 'Usuario Anónimo' }}</span>
+            </div>
+          </td>
+          <td class="py-3 px-4 font-semibold">{{ item.puntuacion || 0 }} pts</td>
+          <td class="py-3 px-4">{{ item.desafiosCompletados || 0 }}</td>
+          <td class="py-3 px-4">
+            <div class="flex items-center">
+              <div class="w-24 bg-gray-200 rounded-full h-2 mr-2">
+                <div 
+                  class="bg-green-500 h-2 rounded-full" 
+                  [style.width]="(item.progresoTotal || 0) + '%'"
+                ></div>
+              </div>
+              <span>{{ item.progresoTotal || 0 }}%</span>
+            </div>
+          </td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <!-- Empty state -->
-  <div *ngIf="!loading && !error && ranking.length === 0" class="text-center p-8">
-    <p>No hay datos de ranking para este desafío.</p>
+  <div *ngIf="!loading && !error && ranking.length === 0" class="text-center p-8 bg-gray-50 rounded-lg">
+    <div class="text-6xl mb-4">📊</div>
+    <p class="text-gray-600 text-lg">No hay datos de ranking para este desafío.</p>
+    <p class="text-gray-500 mt-2">Sé el primero en completar este desafío!</p>
   </div>
 </div>
