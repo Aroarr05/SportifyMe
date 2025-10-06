@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
 import { RankingsService } from '../../services/rankings.service';
-import { AuthService } from '../../../../auth/services/auth.service';
 import { RankingDesafio, Ranking } from '../../../../shared/models';
 
 @Component({
@@ -20,17 +18,9 @@ export class RankingGlobalComponent implements OnInit {
   nombreDesafio: string = '';
   desafioId: number = 1;
 
-  constructor(
-    private rankingsService: RankingsService,
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  constructor(private rankingsService: RankingsService) {} // ← Quita AuthService y Router
 
   ngOnInit(): void {
-    if (!this.authService.isLoggedIn()) {
-      this.router.navigate(['/auth/login']);
-      return;
-    }
     this.cargarRankingDesafio();
   }
 
@@ -48,17 +38,13 @@ export class RankingGlobalComponent implements OnInit {
       error: (err: any) => {
         this.loading = false;
         
-        if (err.status === 403 || err.status === 401) {
-          this.error = 'Sesión expirada o sin permisos. Redirigiendo al login...';
-          this.authService.logout();
-          setTimeout(() => {
-            this.router.navigate(['/auth/login']);
-          }, 2000);
+        if (err.status === 403) {
+          this.error = 'El ranking no está disponible para acceso público.';
         } else if (err.status === 404) {
-          this.error = 'No se encontró el ranking para este desafío.';
+          this.error = 'No se encontró ranking para este desafío.';
           this.ranking = [];
         } else {
-          this.error = 'Error al cargar el ranking. Por favor, inténtalo de nuevo.';
+          this.error = 'Error al cargar el ranking. Intenta nuevamente.';
           console.error('❌ Error:', err);
         }
       }

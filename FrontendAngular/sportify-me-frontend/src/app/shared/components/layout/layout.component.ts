@@ -15,6 +15,7 @@ export class LayoutComponent implements OnInit {
   tituloPagina = 'SportifyMe';
   isLoggedIn = false;
   usuarioLogueado: any = null;
+  showUserMenu = false;
 
   menuItems = [
     { path: '/desafios', label: 'Desafíos', icon: '🏆' },
@@ -37,10 +38,12 @@ export class LayoutComponent implements OnInit {
       .subscribe(() => {
         this.actualizarTitulo();
       });
+
+    // Actualizar título inicial
+    this.actualizarTitulo();
   }
 
   private checkAuthStatus(): void {
-    // Usar tu servicio de autenticación real
     this.isLoggedIn = this.authService.isAuthenticated();
     if (this.isLoggedIn) {
       this.usuarioLogueado = this.authService.getCurrentUser();
@@ -65,23 +68,39 @@ export class LayoutComponent implements OnInit {
       '/desafios': 'Desafíos',
       '/desafios/crear': 'Crear Desafío',
       '/rankings': 'Ranking Global',
-      '/progresos': 'Mi Progreso'
+      '/progresos': 'Mi Progreso',
+      '/auth/login': 'Iniciar Sesión',
+      '/auth/registro': 'Registrarse'
     };
 
     // Para rutas de detalle de desafío
     if (rutaActual.startsWith('/desafios/') && !rutaActual.includes('/crear')) {
       this.tituloPagina = 'Detalle del Desafío';
-    } else {
+    } 
+    // Para rutas de ranking
+    else if (rutaActual.startsWith('/rankings')) {
+      this.tituloPagina = 'Ranking Global';
+    }
+    else {
       this.tituloPagina = titulos[rutaActual] || 'SportifyMe';
     }
   }
 
+  toggleUserMenu(): void {
+    this.showUserMenu = !this.showUserMenu;
+  }
+
   cerrarSesion(): void {
     this.authService.logout();
-    this.router.navigate(['/auth']);
+    this.showUserMenu = false;
+    this.router.navigate(['/auth/login']);
   }
 
   irALogin(): void {
-    this.router.navigate(['/auth']);
+    this.router.navigate(['/auth/login']);
+  }
+
+  irARegistro(): void {
+    this.router.navigate(['/auth/registro']);
   }
 }

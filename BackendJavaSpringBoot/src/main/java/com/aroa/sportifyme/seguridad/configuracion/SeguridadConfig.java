@@ -38,38 +38,41 @@ public class SeguridadConfig {
             
             // Configurar autorizaciones
             .authorizeHttpRequests(auth -> auth
-                // Rutas PÚBLICAS (sin autenticación)
-             .requestMatchers(
-                "/",                    // ✅ Página principal
-                "/favicon.ico",        // ✅ Icono
-                "/health",             // ✅ Health check
-                "/api/test",           // ✅ Endpoint de prueba
-                "/api/auth/**",        // ✅ Autenticación
-                "/actuator/health",    // ✅ Health de Spring Boot
-                "/error"               // ✅ Páginas de error
+            // Rutas PÚBLICAS (sin autenticación)
+            .requestMatchers(
+                "/",                    
+                "/favicon.ico",        
+                "/health",             
+                "/api/test",           
+                "/api/auth/**",        
+                "/actuator/health",    
+                "/error"               
             ).permitAll()
-                
-                // Desafíos: lectura pública, escritura para usuarios autenticados
-                .requestMatchers(HttpMethod.GET, "/api/desafios/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/desafios/**").hasAnyRole("USER", "ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/desafios/**").hasAnyRole("USER", "ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/desafios/**").hasRole("ADMIN")
-                
-                // Usuarios: perfil público, gestión para admins
-                .requestMatchers(HttpMethod.GET, "/api/usuarios/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/usuarios/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/usuarios/**").hasAnyRole("USER", "ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/usuarios/**").hasRole("ADMIN")
-                
-                // Participaciones y progresos requieren autenticación
-                .requestMatchers("/api/participaciones/**").authenticated()
-                .requestMatchers("/api/progresos/**").authenticated()
-                
-                // Admin solo para administradores
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                
-                // Cualquier otra ruta requiere autenticación
-                .anyRequest().authenticated()
+            
+            // Desafíos: lectura pública, escritura para usuarios autenticados
+            .requestMatchers(HttpMethod.GET, "/api/desafios/**").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/desafios/**").hasAnyRole("USER", "ADMIN")
+            .requestMatchers(HttpMethod.PUT, "/api/desafios/**").hasAnyRole("USER", "ADMIN")
+            .requestMatchers(HttpMethod.DELETE, "/api/desafios/**").hasRole("ADMIN")
+            
+            // Usuarios: perfil público, gestión para admins
+            .requestMatchers(HttpMethod.GET, "/api/usuarios/**").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/usuarios/**").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.PUT, "/api/usuarios/**").hasAnyRole("USER", "ADMIN")
+            .requestMatchers(HttpMethod.DELETE, "/api/usuarios/**").hasRole("ADMIN")
+            
+            // ✅ NUEVO: Ranking público, otros progresos requieren autenticación
+            .requestMatchers(HttpMethod.GET, "/api/progresos/ranking/**").permitAll()
+            .requestMatchers("/api/progresos/**").authenticated()
+            
+            // Participaciones requieren autenticación
+            .requestMatchers("/api/participaciones/**").authenticated()
+            
+            // Admin solo para administradores
+            .requestMatchers("/api/admin/**").hasRole("ADMIN")
+            
+            // Cualquier otra ruta requiere autenticación
+            .anyRequest().authenticated()
             )
             
             // Configurar sesiones sin estado (STATELESS para JWT)
