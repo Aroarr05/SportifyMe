@@ -17,15 +17,14 @@ public class NotificacionDTO {
     private String enlace;
     private boolean leida;
     private LocalDateTime fechaCreacion;
-    private LocalDateTime fechaEdicion;
-
+    private Long usuarioId; 
     public NotificacionDTO(Notificacion notificacion) {
         this.id = notificacion.getId();
         this.tipo = notificacion.getTipo().name();
         this.mensaje = notificacion.getMensaje();
         this.enlace = notificacion.getEnlace();
-        this.leida = notificacion.getLeida();
+        this.leida = notificacion.isLeida(); 
         this.fechaCreacion = notificacion.getFechaCreacion();
-        this.fechaEdicion = notificacion.getFechaEdicion();
+        this.usuarioId = notificacion.getUsuario() != null ? notificacion.getUsuario().getId() : null;
     }
 }

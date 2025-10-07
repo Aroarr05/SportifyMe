@@ -3,10 +3,12 @@ package com.aroa.sportifyme.servicio;
 import com.aroa.sportifyme.exception.*;
 import com.aroa.sportifyme.modelo.*;
 import com.aroa.sportifyme.repository.*;
+import com.aroa.sportifyme.seguridad.dto.request.DesafioRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -19,16 +21,26 @@ public class DesafioServicio {
     private final UsuarioServicio usuarioServicio;
 
     @Transactional
-    public Desafio crearDesafio(Desafio desafio, Long creadorId) {
-        validarDesafio(desafio);
-
+    public Desafio crearDesafio(DesafioRequest desafioRequest, Long creadorId) {
         Usuario creador = usuarioServicio.buscarPorId(creadorId)
                 .orElseThrow(() -> new UsuarioNoEncontradoException(creadorId));
-        desafio.setCreador(creador);
 
-        if (desafio.getEsPublico() == null) {
-            desafio.setEsPublico(true);
+        validarFechas(desafioRequest.getFechaInicio(), desafioRequest.getFechaFin());
+
+        Desafio desafio = new Desafio();
+        desafio.setTitulo(desafioRequest.getTitulo());
+        desafio.setDescripcion(desafioRequest.getDescripcion());
+        desafio.setTipoActividad(desafioRequest.getTipoActividad());
+        if (desafioRequest.getObjetivo() != null) {
+            desafio.setObjetivo(BigDecimal.valueOf(desafioRequest.getObjetivo()));
         }
+        desafio.setUnidadObjetivo(desafioRequest.getUnidadObjetivo());
+        desafio.setFechaInicio(desafioRequest.getFechaInicio());
+        desafio.setFechaFin(desafioRequest.getFechaFin());
+        desafio.setEsPublico(desafioRequest.getEsPublico());
+        desafio.setDificultad(desafioRequest.getDificultad());
+        desafio.setMaxParticipantes(desafioRequest.getMaxParticipantes());
+        desafio.setCreador(creador);
 
         return desafioRepository.save(desafio);
     }
@@ -62,18 +74,18 @@ public class DesafioServicio {
     }
 
     @Transactional
-    public Desafio actualizarDesafio(Long id, Desafio desafioActualizado, Long usuarioId) {
-        validarDesafio(desafioActualizado);
-
+    public Desafio actualizarDesafio(Long id, DesafioRequest desafioRequest, Long usuarioId) {
         Desafio desafioExistente = buscarPorId(id);
         Usuario usuario = usuarioServicio.buscarPorId(usuarioId)
                 .orElseThrow(() -> new UsuarioNoEncontradoException(usuarioId));
+
+        validarFechas(desafioRequest.getFechaInicio(), desafioRequest.getFechaFin());
 
         if (!tienePermisosParaModificar(desafioExistente, usuario)) {
             throw new AccesoNoAutorizadoException("actualizar", "desafío", id);
         }
 
-        actualizarCamposPermitidos(desafioExistente, desafioActualizado);
+        actualizarCamposPermitidos(desafioExistente, desafioRequest);
         return desafioRepository.save(desafioExistente);
     }
 
@@ -95,40 +107,32 @@ public class DesafioServicio {
         return desafioRepository.existsById(id);
     }
 
-    private void validarDesafio(Desafio desafio) {
-        if (desafio.getTitulo() == null || desafio.getTitulo().trim().isEmpty()) {
-            throw new IllegalArgumentException("El título es obligatorio");
-        }
-        if (desafio.getTipoActividad() == null) {
-            throw new IllegalArgumentException("El tipo de actividad es obligatorio");
-        }
-        if (desafio.getFechaInicio() == null || desafio.getFechaFin() == null) {
-            throw new IllegalArgumentException("Las fechas son obligatorias");
-        }
-        if (desafio.getFechaFin().isBefore(desafio.getFechaInicio())) {
+    private void validarFechas(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
+        if (fechaFin.isBefore(fechaInicio)) {
             throw new IllegalArgumentException("La fecha de fin debe ser posterior a la de inicio");
-        }
-        if (desafio.getMaxParticipantes() != null && desafio.getMaxParticipantes() <= 0) {
-            throw new IllegalArgumentException("El máximo de participantes debe ser positivo");
         }
     }
 
-    private void actualizarCamposPermitidos(Desafio existente, Desafio actualizado) {
-        existente.setTitulo(actualizado.getTitulo());
-        existente.setDescripcion(actualizado.getDescripcion());
-        existente.setTipoActividad(actualizado.getTipoActividad());
-        existente.setObjetivo(actualizado.getObjetivo());
-        existente.setUnidadObjetivo(actualizado.getUnidadObjetivo());
-        existente.setFechaInicio(actualizado.getFechaInicio());
-        existente.setFechaFin(actualizado.getFechaFin());
-        existente.setEsPublico(actualizado.getEsPublico());
-        existente.setDificultad(actualizado.getDificultad());
-        existente.setMaxParticipantes(actualizado.getMaxParticipantes());
-        existente.setImagenUrl(actualizado.getImagenUrl());
+    private void actualizarCamposPermitidos(Desafio existente, DesafioRequest request) {
+        existente.setTitulo(request.getTitulo());
+        existente.setDescripcion(request.getDescripcion());
+        existente.setTipoActividad(request.getTipoActividad());
+        if (request.getObjetivo() != null) {
+            existente.setObjetivo(BigDecimal.valueOf(request.getObjetivo()));
+        } else {
+            existente.setObjetivo(null);
+        }
+        existente.setUnidadObjetivo(request.getUnidadObjetivo());
+        existente.setFechaInicio(request.getFechaInicio());
+        existente.setFechaFin(request.getFechaFin());
+        existente.setEsPublico(request.getEsPublico());
+        existente.setDificultad(request.getDificultad());
+        existente.setMaxParticipantes(request.getMaxParticipantes());
+        // Nota: La imagenUrl no está en el DTO, se manejaría por separado.
     }
 
     private boolean tienePermisosParaModificar(Desafio desafio, Usuario usuario) {
         return desafio.getCreador().equals(usuario) ||
-                usuario.getRol() == Usuario.RolUsuario.ADMIN;
+                usuario.getRol() == Usuario.RolUsuario.admin;
     }
 }

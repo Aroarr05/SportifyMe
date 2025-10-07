@@ -1,7 +1,11 @@
 package com.aroa.sportifyme.modelo;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Data
@@ -11,19 +15,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Table(name = "notificaciones")
 public class Notificacion {
-
-    public boolean getLeida() {
-        return this.leida;
-    }
-
-    public void setLeida(boolean leida) {
-        this.leida = leida;
-    }
-
-    public enum TipoNotificacion {
-        LOGRO, COMENTARIO, PARTICIPACION, DESAFIO, SISTEMA
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,7 +24,7 @@ public class Notificacion {
     private Usuario usuario;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "ENUM('logro', 'comentario', 'progreso', 'desafio', 'sistema')")
     private TipoNotificacion tipo;
 
     @Column(nullable = false, columnDefinition = "TEXT")
@@ -42,12 +33,21 @@ public class Notificacion {
     @Column(length = 255)
     private String enlace;
 
-    @Column(nullable = false)
-    private boolean leida = false; // Valor por defecto
+    @Column
+    @Builder.Default
+    private boolean leida = false;
 
-    @Column(name = "fecha_creacion", nullable = false)
+    @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion;
 
-    @Column(name = "fecha_edicion")
-    private LocalDateTime fechaEdicion;
+    public enum TipoNotificacion {
+        logro, comentario, progreso, desafio, sistema
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        if (fechaCreacion == null) {
+            fechaCreacion = LocalDateTime.now();
+        }
+    }
 }

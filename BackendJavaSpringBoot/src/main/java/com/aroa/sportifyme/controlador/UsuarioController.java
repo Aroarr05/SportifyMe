@@ -20,17 +20,15 @@ public class UsuarioController {
 
     @PostMapping("/registro")
     public ResponseEntity<Usuario> registrarUsuario(@Valid @RequestBody UsuarioRegistroDTO registroDTO) {
-        Usuario usuario = convertirDtoAEntidad(registroDTO);
+        // Convertir DTO a entidad Usuario
+        Usuario usuario = Usuario.builder()
+                .nombre(registroDTO.getNombre())
+                .email(registroDTO.getEmail())
+                .contraseña(registroDTO.getContrasena()) 
+                .rol(Usuario.RolUsuario.usuario) 
+                .build();
+        
         Usuario usuarioRegistrado = usuarioServicio.registrarUsuario(usuario);
         return ResponseEntity.status(HttpStatus.CREATED).body(usuarioRegistrado);
-    }
-
-    private Usuario convertirDtoAEntidad(UsuarioRegistroDTO dto) {
-        Usuario usuario = new Usuario();
-        usuario.setNombre(dto.getNombre());
-        usuario.setEmail(dto.getEmail());
-        usuario.setContraseña(dto.getContraseña());
-        // Otros campos si son necesarios
-        return usuario;
     }
 }

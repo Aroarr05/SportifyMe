@@ -17,7 +17,7 @@ public class UsuarioRegistroDTO {
 
     @NotBlank(message = "La contraseña es obligatoria")
     @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
-    private String contraseña;
+    private String contrasena;
 
     // Getters y Setters
     public String getNombre() {
@@ -36,11 +36,11 @@ public class UsuarioRegistroDTO {
         this.email = email;
     }
 
-    public String getContraseña() {
-        return contraseña;
+    public String getContrasena() {
+        return contrasena;
     }
 
-    public void setContraseña(String contraseña) {
-        this.contraseña = contraseña;
+    public void setContrasena(String contrasena) {
+        this.contrasena = contrasena;
     }
 }

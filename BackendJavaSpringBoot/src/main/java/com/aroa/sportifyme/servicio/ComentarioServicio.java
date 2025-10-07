@@ -16,7 +16,7 @@ public class ComentarioServicio {
     private final ComentarioRepository comentarioRepository;
     private final UsuarioServicio usuarioServicio;
     private final DesafioServicio desafioServicio;
-    private final ParticipacionServicio participacionServicio; // Asegúrate de inyectar esto
+    private final ParticipacionServicio participacionServicio;
 
     @Transactional
     public Comentario crearComentario(Long desafioId, String contenido, String emailUsuario) {
@@ -27,7 +27,7 @@ public class ComentarioServicio {
 
         Desafio desafio = desafioServicio.buscarPorId(desafioId);
 
-        // Usa participacionServicio en lugar de desafioServicio
+        // ✅ Usa participacionServicio en lugar de desafioServicio
         if (!participacionServicio.usuarioParticipaEnDesafio(usuario.getId(), desafio.getId())) {
             throw new ParticipacionNoEncontradaException(usuario.getId(), desafio.getId());
         }
@@ -77,6 +77,14 @@ public class ComentarioServicio {
     }
 
     @Transactional(readOnly = true)
+    public List<Comentario> obtenerComentariosPorUsuario(Long usuarioId) {
+        if (!usuarioServicio.existePorId(usuarioId)) {
+            throw new UsuarioNoEncontradoException(usuarioId);
+        }
+        return comentarioRepository.findByUsuarioId(usuarioId);
+    }
+
+    @Transactional(readOnly = true)
     public Comentario buscarComentario(Long id) {
         return comentarioRepository.findById(id)
                 .orElseThrow(() -> new ComentarioNoEncontradoException(id));
@@ -91,13 +99,6 @@ public class ComentarioServicio {
         }
     }
 
-    private void validarParticipacionUsuario(Usuario usuario, Desafio desafio) {
-        // Cambiar de desafioServicio a participacionServicio
-        if (!participacionServicio.usuarioParticipaEnDesafio(usuario.getId(), desafio.getId())) {
-            throw new ParticipacionNoEncontradaException(usuario.getId(), desafio.getId());
-        }
-    }
-
     private void validarPermisosEdicion(Comentario comentario, Usuario usuario) {
         if (!comentario.getUsuario().equals(usuario)) {
             throw new AccesoNoAutorizadoException("editar", "comentario", comentario.getId());
@@ -106,7 +107,7 @@ public class ComentarioServicio {
 
     private void validarPermisosEliminacion(Comentario comentario, Usuario usuario) {
         if (!comentario.getUsuario().equals(usuario) &&
-                !usuario.getRol().equals(Usuario.RolUsuario.ADMIN)) {
+                !usuario.getRol().equals(Usuario.RolUsuario.admin)) {
             throw new AccesoNoAutorizadoException("eliminar", "comentario", comentario.getId());
         }
     }

@@ -59,9 +59,9 @@ public class NotificacionServicio {
     @Transactional
     public Notificacion marcarComoLeida(Long notificacionId, Long usuarioId) {
         Notificacion notificacion = obtenerNotificacionPorIdYUsuario(notificacionId, usuarioId);
-        if (!notificacion.getLeida()) {
+        if (!notificacion.isLeida()) { // ✅ CORREGIDO: getLeida() → isLeida()
             notificacion.setLeida(true);
-            notificacion.setFechaEdicion(LocalDateTime.now());
+            // ❌ ELIMINADO: setFechaEdicion() no existe en la BD
             return notificacionRepository.save(notificacion);
         }
         return notificacion;
@@ -69,7 +69,11 @@ public class NotificacionServicio {
 
     @Transactional
     public int marcarTodasComoLeidas(Long usuarioId) {
-        return notificacionRepository.marcarTodasComoLeidas(usuarioId, LocalDateTime.now());
+        // ✅ CORREGIDO: Eliminar fechaEdicion del método del repository
+        List<Notificacion> notificaciones = notificacionRepository.findByUsuarioIdAndLeidaFalse(usuarioId);
+        notificaciones.forEach(notificacion -> notificacion.setLeida(true));
+        notificacionRepository.saveAll(notificaciones);
+        return notificaciones.size();
     }
 
     @Transactional
@@ -79,19 +83,19 @@ public class NotificacionServicio {
     }
 
     @Transactional(readOnly = true)
-    public long contarNotificacionesUsuario(Long usuarioId) {
-        if (!usuarioServicio.existePorId(usuarioId)) {
-            throw new UsuarioNoEncontradoException(usuarioId);
-        }
-        return notificacionRepository.countByUsuarioId(usuarioId);
-    }
-
-    @Transactional(readOnly = true)
     public long contarNotificacionesNoLeidasUsuario(Long usuarioId) {
         if (!usuarioServicio.existePorId(usuarioId)) {
             throw new UsuarioNoEncontradoException(usuarioId);
         }
         return notificacionRepository.countByUsuarioIdAndLeidaFalse(usuarioId);
+    }
+
+    @Transactional(readOnly = true)
+    public long contarNotificacionesUsuario(Long usuarioId) {
+        if (!usuarioServicio.existePorId(usuarioId)) {
+            throw new UsuarioNoEncontradoException(usuarioId);
+        }
+        return notificacionRepository.countByUsuarioId(usuarioId);
     }
 
     private void enviarNotificacionEnTiempoReal(Notificacion notificacion) {

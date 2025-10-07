@@ -104,7 +104,7 @@ public class ParticipacionServicio {
 
     private void validarPermisosAbandono(Participacion participacion, Usuario usuario) {
         if (!participacion.getUsuario().equals(usuario) &&
-                !usuario.getRol().equals(Usuario.RolUsuario.ADMIN)) {
+                !usuario.getRol().equals(Usuario.RolUsuario.admin)) {
             throw new AccesoNoAutorizadoException(
                     "abandonar",
                     "participación",
@@ -118,21 +118,7 @@ public class ParticipacionServicio {
             throw new DesafioExpiradoException(desafio.getId());
         }
     }
-
-    // Métodos de notificación
-    private void notificarNuevaParticipacion(Desafio desafio, Usuario usuario) {
-        if (!desafio.getCreador().equals(usuario)) {
-            String mensaje = String.format("%s se unió a tu desafío '%s'",
-                    usuario.getNombre(), desafio.getTitulo());
-            notificacionServicio.crearNotificacion(
-                    desafio.getCreador().getId(),
-                    "PARTICIPACION",
-                    mensaje,
-                    "/desafios/" + desafio.getId()
-            );
-        }
-    }
-
+    
     private void notificarAbandonoDesafio(Desafio desafio, Usuario usuario) {
         if (!desafio.getCreador().equals(usuario)) {
             String mensaje = String.format("%s abandonó tu desafío '%s'",

@@ -55,7 +55,7 @@ public class AuthController {
             usuario.setNombre(registroDTO.getNombre());
             usuario.setEmail(registroDTO.getEmail());
             usuario.setContraseña(registroDTO.getPassword());
-            usuario.setRol(Usuario.RolUsuario.USUARIO); // Rol por defecto
+            usuario.setRol(Usuario.RolUsuario.usuario); 
 
             Usuario usuarioRegistrado = usuarioServicio.registrarUsuario(usuario);
             return ResponseEntity.status(HttpStatus.CREATED).body(usuarioRegistrado);
