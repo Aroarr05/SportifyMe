@@ -15,13 +15,12 @@ import { AuthService } from '../../../auth/services/auth.service';
         </a>
 
         <div class="navbar-nav ms-auto">
-          <!-- Opciones para usuarios NO autenticados -->
+         
           @if (!authService.isLoggedIn()) {
             <a class="nav-link" routerLink="/auth/login">Iniciar Sesión</a>
-            <a class="nav-link" routerLink="/auth/register">Registrarse</a>
+            <a class="nav-link" routerLink="/auth/registro">Registrarse</a>
           }
           
-          <!-- Opciones para usuarios autenticados -->
           @if (authService.isLoggedIn()) {
             <span class="navbar-text me-3">Hola, {{ authService.getCurrentUser()?.nombre }}</span>
             <button class="btn btn-outline-light btn-sm" (click)="onLogout()">Cerrar Sesión</button>
@@ -31,8 +30,8 @@ import { AuthService } from '../../../auth/services/auth.service';
     </nav>
   `
 })
+
 export class NavbarComponent {
-  
   constructor(public authService: AuthService) {}
 
   onLogout() {

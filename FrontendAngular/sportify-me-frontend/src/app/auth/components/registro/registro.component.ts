@@ -15,6 +15,7 @@ import { AuthService } from '../../services/auth.service';
     RouterModule
   ]
 })
+
 export class RegistroComponent implements OnInit {
   registroForm!: FormGroup;
   loading = false;

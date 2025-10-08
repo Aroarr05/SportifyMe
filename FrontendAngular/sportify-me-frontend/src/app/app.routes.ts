@@ -3,11 +3,22 @@ import { AuthGuard } from './auth/guards/auth.guard';
 import { NoAuthGuard } from './auth/guards/no-auth.guard';
 
 export const routes: Routes = [
-  // RUTAS PÚBLICAS (sin layout)
+  // RUTAS PÚBLICAS (sin layout) - AUTH
   {
     path: 'auth',
-    loadComponent: () => import('./auth/components/login/login.component').then(m => m.LoginComponent),
-    canActivate: [NoAuthGuard]
+    children: [
+      {
+        path: 'login',
+        loadComponent: () => import('./auth/components/login/login.component').then(m => m.LoginComponent),
+        canActivate: [NoAuthGuard]
+      },
+      {
+        path: 'registro',
+        loadComponent: () => import('./auth/components/registro/registro.component').then(m => m.RegistroComponent),
+        canActivate: [NoAuthGuard]
+      },
+      { path: '', redirectTo: 'login', pathMatch: 'full' }
+    ]
   },
 
   // RUTAS CON LAYOUT (protegidas)
@@ -15,7 +26,6 @@ export const routes: Routes = [
     path: '',
     loadComponent: () => import('./shared/components/layout/layout.component').then(m => m.LayoutComponent),
     children: [
-      // Desafíos
       {
         path: 'desafios',
         children: [
@@ -34,25 +44,17 @@ export const routes: Routes = [
           }
         ]
       },
-      
-      // Progresos
       {
         path: 'progresos',
         loadComponent: () => import('./modules/progresos/components/mis-progresos/mis-progresos.component').then(m => m.MisProgresosComponent),
         canActivate: [AuthGuard]
       },
-      
-      // Rankings
       {
         path: 'rankings',
         loadComponent: () => import('./modules/rankings/components/ranking-global/ranking-global.component').then(m => m.RankingGlobalComponent)
       },
-      
-      // Ruta por defecto
       { path: '', redirectTo: 'desafios', pathMatch: 'full' }
     ]
   },
-  
-  // Redirecciones
   { path: '**', redirectTo: 'desafios' }
 ];

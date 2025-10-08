@@ -5,6 +5,7 @@ import { filter } from 'rxjs/operators';
 import { AuthService } from '../../../auth/services/auth.service';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { FooterComponent } from '../footer/footer.component';
+
 @Component({
   standalone: true,
   selector: 'app-layout',
@@ -17,6 +18,7 @@ import { FooterComponent } from '../footer/footer.component';
     FooterComponent 
   ]
 })
+
 export class LayoutComponent implements OnInit {
   tituloPagina = 'SportifyMe';
 
@@ -26,7 +28,6 @@ export class LayoutComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Escuchar cambios de ruta para actualizar título
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
