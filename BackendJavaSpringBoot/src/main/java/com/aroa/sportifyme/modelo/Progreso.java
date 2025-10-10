@@ -1,13 +1,16 @@
 package com.aroa.sportifyme.modelo;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 
 @Data
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "progresos")
 public class Progreso {
     
@@ -30,6 +33,7 @@ public class Progreso {
     private String unidad;
 
     @Column(name = "fecha_registro")
+    @Builder.Default
     private LocalDateTime fechaRegistro = LocalDateTime.now();
 
     @Column(name = "comentario", columnDefinition = "TEXT")
@@ -41,35 +45,35 @@ public class Progreso {
     @PrePersist
     @PreUpdate
     private void validar() {
-        if (desafio != null && !this.unidad.equals(desafio.getUnidadObjetivo())) {
+        // Verificar que la unidad coincida con el desafío (si el desafío tiene unidad)
+        if (desafio != null && desafio.getUnidadObjetivo() != null && 
+            !desafio.getUnidadObjetivo().isEmpty() && 
+            !this.unidad.equals(desafio.getUnidadObjetivo())) {
             throw new IllegalArgumentException("La unidad del progreso no coincide con la unidad del desafío");
         }
-        if (this.valorActual.compareTo(BigDecimal.ZERO) <= 0) {
+        
+        // Verificar que el valor sea positivo
+        if (this.valorActual == null || this.valorActual.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("El valor actual debe ser positivo");
         }
     }
 
-    // Constructor por defecto
-    public Progreso() {}
-
-    // Constructor con parámetros principales
-    public Progreso(Usuario usuario, Desafio desafio, BigDecimal valorActual, String unidad) {
-        this.usuario = usuario;
-        this.desafio = desafio;
-        this.valorActual = valorActual;
-        this.unidad = unidad;
-        this.fechaRegistro = LocalDateTime.now();
-    }
-
     // Método helper para calcular el porcentaje de completado del desafío
     public BigDecimal calcularPorcentajeCompletado() {
-        if (desafio == null || desafio.getObjetivo() == null || desafio.getObjetivo().compareTo(BigDecimal.ZERO) == 0) {
+        if (desafio == null || desafio.getObjetivo() == null || 
+            desafio.getObjetivo().compareTo(BigDecimal.ZERO) == 0) {
             return BigDecimal.ZERO;
         }
-        // ✅ CORREGIDO: Usando RoundingMode.HALF_UP en lugar del deprecated
-        return valorActual.divide(desafio.getObjetivo(), 4, RoundingMode.HALF_UP)
-                         .multiply(BigDecimal.valueOf(100))
-                         .min(BigDecimal.valueOf(100)); // No más del 100%
+        
+        try {
+            // ✅ CORREGIDO: Usando RoundingMode.HALF_UP
+            return valorActual
+                    .divide(desafio.getObjetivo(), 4, RoundingMode.HALF_UP)
+                    .multiply(BigDecimal.valueOf(100))
+                    .min(BigDecimal.valueOf(100)); // No más del 100%
+        } catch (ArithmeticException e) {
+            return BigDecimal.ZERO;
+        }
     }
 
     // Método para verificar si el desafío está completado

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -93,10 +94,23 @@ public interface ProgresoRepository extends JpaRepository<Progreso, Long> {
     @Query("SELECT p FROM Progreso p JOIN FETCH p.usuario JOIN FETCH p.desafio " +
             "WHERE p.dispositivo = :dispositivo ORDER BY p.fechaRegistro DESC")
     List<Progreso> findByDispositivo(@Param("dispositivo") String dispositivo);
-
+        
     // Métodos derivados (Spring Data JPA los genera automáticamente)
     List<Progreso> findByDesafioId(Long desafioId);
     List<Progreso> findByUsuarioIdOrderByFechaRegistroDesc(Long usuarioId);
     Optional<Progreso> findFirstByUsuarioIdAndDesafioIdOrderByValorActualDesc(Long usuarioId, Long desafioId);
     void deleteByUsuarioIdAndDesafioId(Long usuarioId, Long desafioId);
+
+        // En ProgresoRepository
+        @Query("SELECT COUNT(DISTINCT p.desafio.id) FROM Progreso p " +
+        "WHERE p.usuario.id = :usuarioId AND p.valorActual >= p.desafio.objetivo")
+        Integer countDesafiosCompletadosByUsuario(@Param("usuarioId") Long usuarioId);
+
+        @Query("SELECT (MAX(p.valorActual) / d.objetivo * 100) FROM Progreso p " +
+        "JOIN p.desafio d " +
+        "WHERE p.usuario.id = :usuarioId AND p.desafio.id = :desafioId " +
+        "GROUP BY d.objetivo")
+        BigDecimal calcularProgresoUsuarioDesafio(@Param("usuarioId") Long usuarioId, 
+                                                @Param("desafioId") Long desafioId);
+
 }

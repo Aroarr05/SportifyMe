@@ -1,84 +1,223 @@
-<div class="container mx-auto px-4 py-8 max-w-4xl">
-  <app-loading-spinner *ngIf="loading"></app-loading-spinner>
-  <app-error-alert *ngIf="error" [message]="error"></app-error-alert>
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="container mx-auto px-4 max-w-4xl">
+    
+    <!-- Loading -->
+    <app-loading-spinner *ngIf="loading"></app-loading-spinner>
 
-  <div *ngIf="desafio && !loading" class="bg-white rounded-lg shadow-md overflow-hidden">
-    <div class="p-6">
-      <div class="flex justify-between items-start mb-6">
-        <div>
-          <h1 class="text-3xl font-bold text-gray-800">{{ desafio.nombre }}</h1>
-          <p class="text-gray-600 mt-2">Creado por {{ desafio.creador.nombre }} el {{ desafio.fechaCreacion | date:'mediumDate' }}</p>
-        </div>
-        <div class="flex flex-col items-end gap-2">
-          <span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-            {{ desafio.tipoActividad }}
-          </span>
-          <span *ngIf="esDesafioExpirado()" class="inline-block px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">
-            Expirado
-          </span>
+    <!-- Error Alert -->
+    <app-error-alert 
+      *ngIf="error && !loading" 
+      [message]="error"
+      (dismiss)="error = null"
+    >
+      <button 
+        (click)="recargarDatos()"
+        class="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+      >
+        🔄 Reintentar
+      </button>
+    </app-error-alert>
+
+    <!-- Contenido del Desafío -->
+    <div *ngIf="desafio && !loading" class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+      
+      <!-- Header del Desafío -->
+      <div class="bg-gradient-to-r from-blue-500 to-purple-600 p-6 text-white">
+        <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+          <div class="flex-1">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="text-2xl">{{ getIconoTipoActividad() }}</span>
+              <h1 class="text-3xl font-bold">{{ desafio.titulo }}</h1>
+            </div>
+            <p class="text-blue-100 text-lg">
+              Creado por <span class="font-semibold">{{ getNombreCreador() }}</span> 
+              el {{ (desafio.fecha_inicio || desafio.fechaInicio) | date:'mediumDate' }}
+            </p>
+          </div>
+          
+          <div class="flex flex-col items-end gap-2">
+            <span class="inline-block px-4 py-2 bg-white bg-opacity-20 backdrop-blur-sm rounded-full text-sm font-medium">
+              {{ desafio.tipo_actividad || desafio.tipoActividad }}
+            </span>
+            <span *ngIf="esDesafioExpirado()" 
+                  class="inline-block px-4 py-2 bg-red-500 bg-opacity-20 backdrop-blur-sm rounded-full text-sm font-medium">
+              ⏰ Expirado
+            </span>
+          </div>
         </div>
       </div>
 
-      <div class="mb-8">
-        <h2 class="text-xl font-semibold text-gray-800 mb-2">Descripción</h2>
-        <p class="text-gray-700">{{ desafio.descripcion }}</p>
-      </div>
-
-      <div class="grid md:grid-cols-2 gap-6 mb-8">
+      <!-- Contenido Principal -->
+      <div class="p-6 space-y-8">
+        
+        <!-- Descripción -->
         <div>
-          <h2 class="text-xl font-semibold text-gray-800 mb-2">Objetivo</h2>
-          <p class="text-gray-700">{{ desafio.objetivo }}</p>
-        </div>
-        <div>
-          <h2 class="text-xl font-semibold text-gray-800 mb-2">Fecha Límite</h2>
-          <p class="text-gray-700" [class.text-red-600]="esDesafioExpirado()">
-            {{ desafio.fechaLimite | date:'medium' }}
-            <span *ngIf="esDesafioExpirado()" class="ml-2">⏰</span>
+          <h2 class="text-xl font-semibold text-gray-800 mb-3 flex items-center gap-2">
+            <span>📝</span> Descripción
+          </h2>
+          <p class="text-gray-700 leading-relaxed text-lg">
+            {{ desafio.descripcion || 'Este desafío no tiene descripción.' }}
           </p>
         </div>
-      </div>
 
-      <div class="mb-8">
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">Participantes ({{ desafio.participantes?.length || 0 }})</h2>
-        <div *ngIf="desafio.participantes && desafio.participantes.length > 0" class="flex flex-wrap gap-2">
-          <span *ngFor="let participante of desafio.participantes" 
-                class="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm flex items-center">
-            <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-            {{ participante.nombre }}
-            <span *ngIf="participante.id === usuarioActualId" class="ml-1 text-blue-600">(Tú)</span>
-          </span>
+        <!-- Información del Desafío -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Objetivo -->
+          <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+            <h3 class="font-semibold text-blue-800 mb-2 flex items-center gap-2">
+              <span>🎯</span> Objetivo
+            </h3>
+            <p class="text-2xl font-bold text-blue-600">
+              {{ desafio.objetivo }} 
+              <span class="text-lg font-normal text-blue-700">
+                {{ desafio.unidad_objetivo || desafio.unidadObjetivo }}
+              </span>
+            </p>
+          </div>
+
+          <!-- Fecha Límite -->
+          <div class="bg-orange-50 rounded-lg p-4 border border-orange-200" 
+               [class.bg-red-50]="esDesafioExpirado()"
+               [class.border-red-200]="esDesafioExpirado()">
+            <h3 class="font-semibold text-orange-800 mb-2 flex items-center gap-2"
+                [class.text-red-800]="esDesafioExpirado()">
+              <span>⏱️</span> Fecha Límite
+            </h3>
+            <p class="text-lg font-semibold" 
+               [class.text-red-600]="esDesafioExpirado()"
+               [class.text-orange-600]="!esDesafioExpirado()">
+              {{ (desafio.fecha_fin || desafio.fechaFin) | date:'medium' }}
+            </p>
+            <p *ngIf="esDesafioExpirado()" class="text-red-600 text-sm font-medium mt-1">
+              ⚠️ Este desafío ha finalizado
+            </p>
+          </div>
+
+          <!-- Dificultad -->
+          <div class="bg-green-50 rounded-lg p-4 border border-green-200">
+            <h3 class="font-semibold text-green-800 mb-2 flex items-center gap-2">
+              <span>📊</span> Dificultad
+            </h3>
+            <span class="inline-block px-3 py-1 rounded-full text-sm font-medium" 
+                  [class]="getClaseDificultad()">
+              {{ desafio.dificultad || 'No especificada' }}
+            </span>
+          </div>
         </div>
-        <p *ngIf="!desafio.participantes || desafio.participantes.length === 0" class="text-gray-500">
-          Aún no hay participantes. ¡Sé el primero en unirte!
-        </p>
-      </div>
 
-      <div class="flex justify-center">
-        <button
-          (click)="unirseADesafio()"
-          [disabled]="unirseLoading || esDesafioExpirado() || yaEsParticipante()"
-          class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-green-300 transition-colors flex items-center gap-2"
-        >
-          <span *ngIf="!unirseLoading">
-            {{ getTextoBoton() }}
-          </span>
-          <span *ngIf="unirseLoading" class="flex items-center gap-2">
-            <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            Uniéndose...
-          </span>
-        </button>
-      </div>
+        <!-- Información Adicional -->
+        <div class="grid md:grid-cols-2 gap-6">
+          <!-- Participantes Máximos -->
+          <div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
+              <span>👥</span> Límite de Participantes
+            </h3>
+            <p class="text-gray-700">
+              {{ desafio.max_participantes || desafio.maxParticipantes || 'Ilimitado' }} participantes
+            </p>
+          </div>
 
-      <!-- Información adicional si el usuario ya es participante -->
-      <div *ngIf="yaEsParticipante()" class="mt-6 p-4 bg-blue-50 rounded-lg">
-        <div class="flex items-center">
-          <svg class="w-5 h-5 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-          </svg>
-          <span class="text-blue-800 font-medium">¡Ya eres parte de este desafío! ¡Mucha suerte!</span>
+          <!-- Estado del Desafío -->
+          <div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
+              <span>📈</span> Estado
+            </h3>
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full" 
+                    [class.bg-green-500]="!esDesafioExpirado() && !esDesafioCompleto()"
+                    [class.bg-yellow-500]="esDesafioCompleto()"
+                    [class.bg-red-500]="esDesafioExpirado()">
+              </span>
+              <span class="text-gray-700">
+                <span *ngIf="!esDesafioExpirado() && !esDesafioCompleto()">🟢 Activo</span>
+                <span *ngIf="esDesafioCompleto()">🟡 Completo</span>
+                <span *ngIf="esDesafioExpirado()">🔴 Expirado</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Participantes -->
+        <div>
+          <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <span>👥</span> Participantes ({{ getTotalParticipantes() }})
+          </h2>
+          
+          <div *ngIf="participantes.length > 0" class="flex flex-wrap gap-3">
+            <div *ngFor="let participante of participantes" 
+                 class="flex items-center gap-3 bg-white border border-gray-200 rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow">
+              <img [src]="participante.avatarUrl || 'https://i.pravatar.cc/150?img=0'" 
+                   [alt]="participante.nombre"
+                   class="w-10 h-10 rounded-full object-cover border-2 border-gray-300">
+              <div>
+                <p class="font-medium text-gray-800 flex items-center gap-2">
+                  {{ participante.nombre }}
+                  <span *ngIf="participante.id === usuarioActualId" 
+                        class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-bold">
+                    Tú
+                  </span>
+                </p>
+                <p class="text-sm text-gray-500">Participante</p>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="participantes.length === 0" 
+               class="text-center py-8 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
+            <div class="text-4xl mb-3">👥</div>
+            <p class="text-gray-600 text-lg font-medium">Aún no hay participantes</p>
+            <p class="text-gray-500 mt-1">¡Sé el primero en unirte a este desafío!</p>
+          </div>
+        </div>
+
+        <!-- Botón de Unirse -->
+        <div class="flex justify-center pt-6 border-t border-gray-200">
+          <button
+            (click)="unirseADesafio()"
+            [disabled]="unirseLoading || esDesafioExpirado() || yaEsParticipante() || esDesafioCompleto()"
+            class="px-8 py-4 text-lg font-semibold rounded-xl transition-all duration-300 flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+            [class]="getClaseBotonUnirse()"
+          >
+            <span *ngIf="!unirseLoading">{{ getTextoBoton() }}</span>
+            <span *ngIf="unirseLoading" class="flex items-center gap-2">
+              <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              Uniéndose...
+            </span>
+          </button>
+        </div>
+
+        <!-- Mensajes Informativos -->
+        <div *ngIf="yaEsParticipante()" 
+             class="bg-green-50 border border-green-200 rounded-xl p-4">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">🎉</span>
+            <div>
+              <h4 class="font-semibold text-green-800 text-lg">¡Ya estás participando!</h4>
+              <p class="text-green-700">Mucha suerte en este desafío. ¡A dar lo mejor!</p>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="esDesafioCompleto() && !yaEsParticipante()" 
+             class="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">🚫</span>
+            <div>
+              <h4 class="font-semibold text-yellow-800 text-lg">Cupo completo</h4>
+              <p class="text-yellow-700">Este desafío ha alcanzado el máximo de participantes.</p>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="esDesafioExpirado() && !yaEsParticipante()" 
+             class="bg-red-50 border border-red-200 rounded-xl p-4">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">⏰</span>
+            <div>
+              <h4 class="font-semibold text-red-800 text-lg">Desafío expirado</h4>
+              <p class="text-red-700">El período de inscripción para este desafío ha finalizado.</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

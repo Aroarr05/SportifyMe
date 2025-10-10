@@ -1,32 +1,33 @@
 package com.aroa.sportifyme.repository;
 
 import com.aroa.sportifyme.modelo.Desafio;
-import com.aroa.sportifyme.modelo.TipoActividad;
 import com.aroa.sportifyme.modelo.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
 public interface DesafioRepository extends JpaRepository<Desafio, Long> {
-
-    // Métodos básicos que vienen de JpaRepository:
-    // save(), findById(), findAll(), deleteById(), etc.
-
-    List<Desafio> findByCreador(Usuario creador);
-
+    
     List<Desafio> findByCreadorOrderByFechaInicioDesc(Usuario creador);
-
-    List<Desafio> findByEsPublicoTrueAndFechaFinAfterOrderByFechaInicioAsc(LocalDateTime fechaActual);
-
+    
+    List<Desafio> findByEsPublicoTrueAndFechaFinAfterOrderByFechaInicioAsc(LocalDateTime fecha);
+    
     List<Desafio> findAllByOrderByFechaInicioDesc();
-
-    // Consulta personalizada para buscar por tipo de actividad
-    @Query("SELECT d FROM Desafio d WHERE d.tipoActividad = :tipo AND d.esPublico = true AND d.fechaFin > CURRENT_TIMESTAMP")
-    List<Desafio> findDesafiosActivosPorTipo(TipoActividad tipo);
-
-    // Consulta para verificar existencia
-    boolean existsByIdAndCreador(Long id, Usuario creador);
+    
+    // CORREGIDO: Usar la tabla participaciones
+    @Query("SELECT p.usuario FROM Participacion p WHERE p.desafio.id = :desafioId")
+    List<Usuario> findParticipantesByDesafioId(@Param("desafioId") Long desafioId);
+    
+    // AGREGAR: Método para contar participantes
+    @Query("SELECT COUNT(p) FROM Participacion p WHERE p.desafio.id = :desafioId")
+    Long countParticipantesByDesafioId(@Param("desafioId") Long desafioId);
+    
+    // AGREGAR: Método para verificar si es participante
+    @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM Participacion p WHERE p.desafio.id = :desafioId AND p.usuario.id = :usuarioId")
+    boolean esParticipante(@Param("desafioId") Long desafioId, @Param("usuarioId") Long usuarioId);
 }

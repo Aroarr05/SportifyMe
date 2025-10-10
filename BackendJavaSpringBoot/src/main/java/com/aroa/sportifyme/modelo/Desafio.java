@@ -1,23 +1,26 @@
 package com.aroa.sportifyme.modelo;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import com.fasterxml.jackson.annotation.JsonIgnore;  // ← IMPORTA ESTO
+import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "desafios")
 public class Desafio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false)
     private String titulo;
 
-    @Column(columnDefinition = "TEXT")
     private String descripcion;
 
     @Enumerated(EnumType.STRING)
@@ -27,7 +30,7 @@ public class Desafio {
     @Column(precision = 10, scale = 2)
     private BigDecimal objetivo;
 
-    @Column(name = "unidad_objetivo", length = 20)
+    @Column(name = "unidad_objetivo")
     private String unidadObjetivo;
 
     @Column(name = "fecha_inicio", nullable = false)
@@ -38,18 +41,49 @@ public class Desafio {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creador_id", nullable = false)
-    @JsonIgnore  // ← SOLO AÑADE ESTA LÍNEA
     private Usuario creador;
 
-    @Column(name = "es_publico", nullable = false)
+    @Column(name = "es_publico")
+    @Builder.Default  // ✅ AGREGAR ESTO
     private Boolean esPublico = true;
 
-    @Column(name = "imagen_url", length = 255)
+    @Column(name = "imagen_url")
     private String imagenUrl;
 
     @Enumerated(EnumType.STRING)
-    private DificultadDesafio dificultad;
+    private Dificultad dificultad;
 
     @Column(name = "max_participantes")
     private Integer maxParticipantes;
+
+    @OneToMany(mappedBy = "desafio", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default  // ✅ AGREGAR ESTO TAMBIÉN
+    private Set<Participacion> participaciones = new HashSet<>();
+
+    // Método helper para obtener los usuarios participantes
+    public Set<Usuario> getParticipantes() {
+        Set<Usuario> participantes = new HashSet<>();
+        for (Participacion participacion : this.participaciones) {
+            participantes.add(participacion.getUsuario());
+        }
+        return participantes;
+    }
+
+    // Método para agregar participante
+    public void agregarParticipante(Usuario usuario) {
+        Participacion participacion = Participacion.builder()
+                .usuario(usuario)
+                .desafio(this)
+                .fechaUnion(LocalDateTime.now())
+                .build();
+        this.participaciones.add(participacion);
+    }
+
+    public enum TipoActividad {
+        correr, ciclismo, nadar, gimnasio, senderismo, yoga, otro
+    }
+
+    public enum Dificultad {
+        principiante, intermedio, avanzado
+    }
 }

@@ -1,17 +1,35 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { ListaDesafiosComponent } from './components/lista-desafios/lista-desafios.component';
-import { CrearDesafioComponent } from './components/crear-desafio/crear-desafio.component';
-import { DetalleDesafioComponent } from './components/detalle-desafio/detalle-desafio.component';
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { AuthService } from '../../auth/services/auth.service';
 
-const routes: Routes = [
-  { path: '', component: ListaDesafiosComponent, data: { breadcrumb: 'Lista de desafíos' } },
-  { path: 'crear', component: CrearDesafioComponent, data: { breadcrumb: 'Crear desafío' } },
-  { path: ':id', component: DetalleDesafioComponent, data: { breadcrumb: 'Detalle del desafío' } }
-];
-
-@NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+@Injectable({
+  providedIn: 'root'
 })
-export class DesafiosRoutingModule { }
+export class DesafiosService {
+  private apiUrl = 'http://localhost:8080/api/desafios';
+
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService
+  ) {}
+
+  obtenerParticipantes(desafioId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/${desafioId}/participantes`);
+  }
+
+  obtenerDesafioPorId(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
+  }
+
+  // ✅ CORREGIDO: Cambiar de 'participar' a 'unirse'
+  unirseADesafio(desafioId: number): Observable<any> {
+    // En Spring el endpoint es POST /api/desafios/{desafioId}/unirse
+    // Y el usuario se obtiene del token, no del body
+    return this.http.post(`${this.apiUrl}/${desafioId}/unirse`, {});
+  }
+
+  obtenerDesafiosActivos(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/activos`);
+  }
+}

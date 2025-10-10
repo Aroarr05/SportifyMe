@@ -1,110 +1,67 @@
 package com.aroa.sportifyme.controlador;
 
-import com.aroa.sportifyme.modelo.Desafio;
-import com.aroa.sportifyme.seguridad.dto.request.DesafioRequest;
+import com.aroa.sportifyme.modelo.Usuario;
 import com.aroa.sportifyme.servicio.DesafioServicio;
-import org.springframework.http.HttpStatus;
+import com.aroa.sportifyme.servicio.UsuarioServicio;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/desafios")
+@RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:4200")
 public class DesafioController {
 
     private final DesafioServicio desafioServicio;
+    private final UsuarioServicio usuarioServicio;
 
-    public DesafioController(DesafioServicio desafioServicio) {
-        this.desafioServicio = desafioServicio;
-    }
-
-    @GetMapping
-    public ResponseEntity<?> listarDesafios() {
+    // Endpoint para obtener participantes de un desafío
+    @GetMapping("/{desafioId}/participantes")
+    public ResponseEntity<?> obtenerParticipantes(@PathVariable Long desafioId) {
         try {
-            List<Desafio> desafios = desafioServicio.listarTodos();
-            return ResponseEntity.ok(desafios);
+            List<Usuario> participantes = desafioServicio.obtenerParticipantesDesafio(desafioId);
+            return ResponseEntity.ok(participantes);
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al obtener desafíos: " + e.getMessage());
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
-    @PostMapping
-    public ResponseEntity<?> crearDesafio(
-            @RequestBody DesafioRequest desafioRequest, // ✅ Cambiado a DesafioRequest
-            @RequestHeader("X-User-ID") Long creadorId) {
-        
+    // Endpoint para unirse a un desafío
+    @PostMapping("/{desafioId}/unirse")
+    public ResponseEntity<?> unirseADesafio(
+            @PathVariable Long desafioId, 
+            @AuthenticationPrincipal UserDetails userDetails) {
         try {
-            Desafio nuevoDesafio = desafioServicio.crearDesafio(desafioRequest, creadorId);
-            return ResponseEntity.status(HttpStatus.CREATED).body(nuevoDesafio);
+            Long usuarioId = obtenerUsuarioIdDesdeUserDetails(userDetails);
+            desafioServicio.unirseADesafio(desafioId, usuarioId);
+            return ResponseEntity.ok().body(Map.of("message", "Te has unido al desafío exitosamente"));
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Error al crear desafío: " + e.getMessage());
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
-    // ✅ NUEVOS ENDPOINTS que coinciden con tu servicio
+    // Endpoint para obtener un desafío por ID
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerDesafioPorId(@PathVariable Long id) {
         try {
-            Desafio desafio = desafioServicio.buscarPorId(id);
+            Object desafio = desafioServicio.buscarPorId(id);
             return ResponseEntity.ok(desafio);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Desafío no encontrado: " + e.getMessage());
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
-    @GetMapping("/usuario/{usuarioId}")
-    public ResponseEntity<?> listarDesafiosPorCreador(@PathVariable Long usuarioId) {
-        try {
-            List<Desafio> desafios = desafioServicio.listarPorCreador(usuarioId);
-            return ResponseEntity.ok(desafios);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al obtener desafíos del usuario: " + e.getMessage());
-        }
-    }
-
-    @GetMapping("/activos")
-    public ResponseEntity<?> listarDesafiosActivos() {
-        try {
-            List<Desafio> desafios = desafioServicio.listarDesafiosActivos();
-            return ResponseEntity.ok(desafios);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al obtener desafíos activos: " + e.getMessage());
-        }
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<?> actualizarDesafio(
-            @PathVariable Long id,
-            @RequestBody DesafioRequest desafioRequest, // ✅ Cambiado a DesafioRequest
-            @RequestHeader("X-User-ID") Long usuarioId) {
-        try {
-            Desafio desafioActualizado = desafioServicio.actualizarDesafio(id, desafioRequest, usuarioId);
-            return ResponseEntity.ok(desafioActualizado);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Error al actualizar desafío: " + e.getMessage());
-        }
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminarDesafio(
-            @PathVariable Long id,
-            @RequestHeader("X-User-ID") Long usuarioId) {
-        try {
-            desafioServicio.eliminarDesafio(id, usuarioId);
-            return ResponseEntity.ok("Desafío eliminado correctamente");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Error al eliminar desafío: " + e.getMessage());
-        }
+    // Método auxiliar para obtener el ID del usuario
+    private Long obtenerUsuarioIdDesdeUserDetails(UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        return usuarioServicio.buscarPorEmail(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + username))
+                .getId();
     }
 }

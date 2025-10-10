@@ -1,94 +1,167 @@
-<div class="container mx-auto p-4">
-  <h2 class="text-2xl font-bold mb-4">🏆 {{ nombreDesafio || 'Ranking del Desafío' }}</h2>
+<div class="container mx-auto p-6">
+  <!-- Header -->
+  <div class="text-center mb-8">
+    <h1 class="text-3xl font-bold text-gray-800 mb-2">🏆 Ranking de Desafíos</h1>
+    <p class="text-gray-600">Compara tu rendimiento con otros participantes</p>
+  </div>
 
   <!-- Selector de desafío -->
-  <div class="mb-4">
-    <label class="block text-sm font-medium mb-2">Seleccionar Desafío:</label>
-    <select 
-      [(ngModel)]="desafioId" 
-      (change)="cambiarDesafio(desafioId)"
-      class="border rounded p-2 w-full md:w-auto"
-    >
-      <option [value]="1">Desafío 1</option>
-      <option [value]="2">Desafío 2</option>
-      <option [value]="3">Desafío 3</option>
-      <option [value]="4">Desafío 4</option>
-      <option [value]="5">Desafío 5</option>
-    </select>
+  <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+      <div>
+        <h2 class="text-xl font-semibold text-gray-800">{{ nombreDesafio || 'Selecciona un desafío' }}</h2>
+      </div>
+      <div class="mt-2 md:mt-0">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Seleccionar Desafío:</label>
+        <select 
+          [(ngModel)]="desafioId" 
+          (change)="cambiarDesafio(desafioId)"
+          class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full md:w-64"
+        >
+          <option [value]="1">🏃‍♂️ Desafío 1 - Carrera 5K</option>
+          <option [value]="2">💪 Desafío 2 - Flexiones</option>
+          <option [value]="3">🧘 Desafío 3 - Yoga</option>
+          <option [value]="4">🚴 Desafío 4 - Ciclismo</option>
+          <option [value]="5">🏊 Desafío 5 - Natación</option>
+        </select>
+      </div>
+    </div>
   </div>
 
   <!-- Loading -->
-  <div *ngIf="loading" class="text-center p-8">
-    <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-    <p class="mt-2">Cargando ranking...</p>
+  <div *ngIf="loading" class="flex justify-center items-center p-12">
+    <div class="text-center">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+      <p class="text-gray-600">Cargando ranking...</p>
+    </div>
   </div>
 
   <!-- Error -->
-  <div *ngIf="error && !loading" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-    <p>{{ error }}</p>
+  <div *ngIf="error && !loading" class="bg-red-50 border border-red-200 rounded-lg p-6 text-center mb-6">
+    <div class="text-red-600 text-4xl mb-3">⚠️</div>
+    <h3 class="text-red-800 font-semibold text-lg mb-2">Error al cargar el ranking</h3>
+    <p class="text-red-600 mb-4">{{ error }}</p>
     <button 
       *ngIf="!error.includes('Redirigiendo')"
       (click)="reintentar()" 
-      class="mt-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded transition duration-200"
+      class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg transition duration-200 font-medium"
     >
       Reintentar
     </button>
   </div>
 
-  <!-- Ranking -->
-  <div *ngIf="!loading && !error && ranking.length > 0" class="overflow-x-auto">
-    <table class="min-w-full bg-white border border-gray-300 rounded-lg overflow-hidden">
-      <thead>
-        <tr class="bg-gray-100">
-          <th class="py-3 px-4 border-b text-left">Posición</th>
-          <th class="py-3 px-4 border-b text-left">Usuario</th>
-          <th class="py-3 px-4 border-b text-left">Puntuación</th>
-          <th class="py-3 px-4 border-b text-left">Desafíos Completados</th>
-          <th class="py-3 px-4 border-b text-left">Progreso Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr 
-          *ngFor="let item of ranking; let i = index" 
-          [class]="getRowClass(i) + ' hover:bg-gray-50 transition duration-150'"
-          class="border-b"
-        >
-          <td class="py-3 px-4 text-center">
-            <div class="flex items-center justify-center">
-              <span class="font-bold text-lg">{{ item.posicion || i + 1 }}</span>
-              <span class="ml-2 text-xl">{{ getMedal(i) }}</span>
-            </div>
-          </td>
-          <td class="py-3 px-4">
+  <!-- Gráfico de Ranking -->
+  <div *ngIf="!loading && !error && ranking.length > 0" class="space-y-6">
+    
+    <!-- Tarjeta del Líder -->
+    <div class="bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-2xl p-6 text-white shadow-lg transform hover:scale-[1.02] transition duration-300">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <div class="text-4xl mr-4">👑</div>
+          <div>
             <div class="flex items-center">
-              <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">
-                {{ item.usuario.nombre.charAt(0) || 'U' }}
+              <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center text-white text-lg font-bold mr-3">
+                {{ ranking[0].usuario.nombre.charAt(0) || 'U' }}
               </div>
-              <span>{{ item.usuario.nombre || 'Usuario Anónimo' }}</span>
+              <div>
+                <h3 class="text-xl font-bold">{{ ranking[0].usuario.nombre || 'Usuario Anónimo' }}</h3>
+                <p class="text-yellow-100 text-sm">Líder del Ranking</p>
+              </div>
             </div>
-          </td>
-          <td class="py-3 px-4 font-semibold">{{ item.puntuacion || 0 }} pts</td>
-          <td class="py-3 px-4">{{ item.desafiosCompletados || 0 }}</td>
-          <td class="py-3 px-4">
-            <div class="flex items-center">
-              <div class="w-24 bg-gray-200 rounded-full h-2 mr-2">
+          </div>
+        </div>
+        <div class="text-right">
+          <div class="text-3xl font-bold">{{ ranking[0].puntuacion || 0 }} pts</div>
+          <div class="text-yellow-100 text-sm">{{ ranking[0].desafiosCompletados || 0 }} desafíos</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráfico de Barras -->
+    <div class="bg-white rounded-2xl shadow-lg p-6">
+      <h3 class="text-xl font-semibold text-gray-800 mb-6">Ranking de Participantes</h3>
+      
+      <div class="space-y-4">
+        <div 
+          *ngFor="let item of ranking; let i = index" 
+          class="flex items-center justify-between p-4 rounded-xl border border-gray-200 hover:shadow-md transition duration-200"
+          [class]="getCardClass(i)"
+        >
+          <!-- Posición y Avatar -->
+          <div class="flex items-center flex-1">
+            <div class="flex items-center justify-center w-12">
+              <span class="text-2xl font-bold text-gray-700 mr-2">{{ i + 1 }}</span>
+              <span class="text-2xl">{{ getMedal(i) }}</span>
+            </div>
+            
+            <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm ml-4"
+                 [class]="getAvatarColor(i)">
+              {{ item.usuario.nombre.charAt(0) || 'U' }}
+            </div>
+            
+            <div class="ml-4">
+              <h4 class="font-semibold text-gray-800">{{ item.usuario.nombre || 'Usuario Anónimo' }}</h4>
+              <p class="text-sm text-gray-500">{{ item.desafiosCompletados || 0 }} desafíos completados</p>
+            </div>
+          </div>
+
+          <!-- Puntuación y Barra de Progreso -->
+          <div class="flex items-center space-x-6">
+            <div class="text-right">
+              <div class="text-lg font-bold text-gray-800">{{ item.puntuacion || 0 }} pts</div>
+              <div class="text-sm text-gray-500">Puntuación</div>
+            </div>
+            
+            <div class="w-32">
+              <div class="flex justify-between text-xs text-gray-500 mb-1">
+                <span>Progreso</span>
+                <span>{{ item.progresoTotal || 0 }}%</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  class="bg-green-500 h-2 rounded-full" 
+                  class="h-2 rounded-full transition-all duration-500"
+                  [class]="getProgressBarColor(i)"
                   [style.width]="(item.progresoTotal || 0) + '%'"
                 ></div>
               </div>
-              <span>{{ item.progresoTotal || 0 }}%</span>
             </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-white rounded-2xl shadow-lg p-6 text-center">
+        <div class="text-3xl text-blue-600 mb-2">👥</div>
+        <div class="text-2xl font-bold text-gray-800">{{ ranking.length }}</div>
+        <div class="text-gray-600">Participantes</div>
+      </div>
+      
+      <div class="bg-white rounded-2xl shadow-lg p-6 text-center">
+        <div class="text-3xl text-green-600 mb-2">📈</div>
+        <div class="text-2xl font-bold text-gray-800">{{ getPuntuacionMedia() }}</div>
+        <div class="text-gray-600">Puntuación Media</div>
+      </div>
+      
+      <div class="bg-white rounded-2xl shadow-lg p-6 text-center">
+        <div class="text-3xl text-purple-600 mb-2">🏅</div>
+        <div class="text-2xl font-bold text-gray-800">{{ getMaxDesafios() }}</div>
+        <div class="text-gray-600">Máx. Desafíos</div>
+      </div>
+    </div>
   </div>
 
   <!-- Empty state -->
-  <div *ngIf="!loading && !error && ranking.length === 0" class="text-center p-8 bg-gray-50 rounded-lg">
-    <div class="text-6xl mb-4">📊</div>
-    <p class="text-gray-600 text-lg">No hay datos de ranking para este desafío.</p>
-    <p class="text-gray-500 mt-2">Sé el primero en completar este desafío!</p>
+  <div *ngIf="!loading && !error && ranking.length === 0" class="text-center py-16">
+    <div class="text-8xl mb-6">📊</div>
+    <h3 class="text-2xl font-bold text-gray-800 mb-4">No hay datos de ranking</h3>
+    <p class="text-gray-600 text-lg mb-6">Sé el primero en completar este desafío y aparecerás aquí!</p>
+    <button 
+      routerLink="/desafios"
+      class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition duration-200"
+    >
+      Ver Desafíos
+    </button>
   </div>
 </div>
