@@ -21,6 +21,8 @@ import { ErrorAlertComponent } from '../../../../shared/components/error-alert/e
 export class CrearDesafioComponent implements OnInit {
   desafioForm: FormGroup;
   tiposActividad = Object.values(TipoActividad);
+  dificultades = ['principiante', 'intermedio', 'avanzado'];
+  unidades = ['km', 'm', 'minutos', 'horas', 'repeticiones', 'series'];
   loading = false;
   error: string | null = null;
 
@@ -30,11 +32,18 @@ export class CrearDesafioComponent implements OnInit {
     private router: Router
   ) {
     this.desafioForm = this.fb.group({
-      nombre: ['', [Validators.required, Validators.maxLength(100)]],
+      // CORREGIDO: Cambiar 'nombre' por 'titulo'
+      titulo: ['', [Validators.required, Validators.maxLength(100)]],
       descripcion: ['', [Validators.required, Validators.maxLength(500)]],
-      tipoActividad: [TipoActividad.CARRERA, Validators.required],
-      objetivo: ['', [Validators.required, Validators.maxLength(200)]],
-      fechaLimite: ['', [Validators.required]]
+      tipoActividad: [TipoActividad.CORRER, Validators.required], // CORREGIDO: Valor por defecto actualizado
+      objetivo: [0, [Validators.required, Validators.min(0.1)]], // CORREGIDO: De string a number
+      unidadObjetivo: ['km', Validators.required], // NUEVO: Campo agregado
+      fechaInicio: ['', Validators.required], // CORREGIDO: De fechaLimite a fechaInicio
+      fechaFin: ['', Validators.required], // NUEVO: Campo agregado
+      esPublico: [true], // NUEVO: Campo agregado
+      dificultad: ['intermedio', Validators.required], // NUEVO: Campo agregado
+      maxParticipantes: [10, [Validators.required, Validators.min(1)]] // NUEVO: Campo agregado
+      // NOTA: creadorId se asignará automáticamente desde el servicio/auth
     });
   }
 
@@ -42,6 +51,7 @@ export class CrearDesafioComponent implements OnInit {
 
   onSubmit(): void {
     if (this.desafioForm.invalid) {
+      this.marcarCamposComoTocados();
       return;
     }
 
@@ -49,6 +59,15 @@ export class CrearDesafioComponent implements OnInit {
     this.error = null;
 
     const desafioDto = this.desafioForm.value;
+    
+    // Asegurar que las fechas tengan formato correcto
+    if (desafioDto.fechaInicio) {
+      desafioDto.fechaInicio = new Date(desafioDto.fechaInicio).toISOString();
+    }
+    if (desafioDto.fechaFin) {
+      desafioDto.fechaFin = new Date(desafioDto.fechaFin).toISOString();
+    }
+
     this.desafiosService.crearDesafio(desafioDto).subscribe({
       next: (desafio) => {
         this.loading = false;
@@ -60,5 +79,22 @@ export class CrearDesafioComponent implements OnInit {
         console.error(err);
       }
     });
+  }
+
+  private marcarCamposComoTocados(): void {
+    Object.keys(this.desafioForm.controls).forEach(key => {
+      this.desafioForm.get(key)?.markAsTouched();
+    });
+  }
+
+  // Validación para fecha fin mayor que fecha inicio
+  validarFechas(): boolean {
+    const inicio = this.desafioForm.get('fechaInicio')?.value;
+    const fin = this.desafioForm.get('fechaFin')?.value;
+    
+    if (inicio && fin) {
+      return new Date(fin) > new Date(inicio);
+    }
+    return true;
   }
 }
