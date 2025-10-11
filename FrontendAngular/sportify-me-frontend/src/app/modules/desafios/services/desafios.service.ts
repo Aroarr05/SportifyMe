@@ -33,8 +33,17 @@ export class DesafiosService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  // AÑADE ESTE MÉTODO QUE FALTA
   unirseADesafio(id: number): Observable<Desafio> {
     return this.http.post<Desafio>(`${this.apiUrl}/${id}/unirse`, {});
+  }
+
+  // ✅ MÉTODO FALTANTE: Obtener participantes
+  obtenerParticipantes(desafioId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/${desafioId}/participantes`);
+  }
+
+  // ✅ MÉTODO FALTANTE: Obtener desafíos activos
+  obtenerDesafiosActivos(): Observable<Desafio[]> {
+    return this.http.get<Desafio[]>(`${this.apiUrl}/activos`);
   }
 }

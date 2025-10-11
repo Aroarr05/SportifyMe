@@ -1,6 +1,8 @@
 package com.aroa.sportifyme.controlador;
 
+import com.aroa.sportifyme.modelo.Desafio;
 import com.aroa.sportifyme.modelo.Usuario;
+import com.aroa.sportifyme.seguridad.dto.DesafioDTO;
 import com.aroa.sportifyme.servicio.DesafioServicio;
 import com.aroa.sportifyme.servicio.UsuarioServicio;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/desafios")
@@ -20,6 +23,32 @@ public class DesafioController {
 
     private final DesafioServicio desafioServicio;
     private final UsuarioServicio usuarioServicio;
+
+    // ✅ CORREGIDO: Usar DTO en lugar de la entidad directamente
+    @GetMapping
+    public ResponseEntity<List<DesafioDTO>> listarTodosLosDesafios() {
+        try {
+            List<Desafio> desafios = desafioServicio.listarTodos();
+            List<DesafioDTO> desafiosDTO = desafios.stream()
+                    .map(DesafioDTO::fromEntity)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(desafiosDTO);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    // ✅ CORREGIDO: También para obtener por ID
+    @GetMapping("/{id}")
+    public ResponseEntity<?> obtenerDesafioPorId(@PathVariable Long id) {
+        try {
+            Desafio desafio = desafioServicio.buscarPorId(id);
+            DesafioDTO desafioDTO = DesafioDTO.fromEntity(desafio);
+            return ResponseEntity.ok(desafioDTO);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
 
     // Endpoint para obtener participantes de un desafío
     @GetMapping("/{desafioId}/participantes")
@@ -41,17 +70,6 @@ public class DesafioController {
             Long usuarioId = obtenerUsuarioIdDesdeUserDetails(userDetails);
             desafioServicio.unirseADesafio(desafioId, usuarioId);
             return ResponseEntity.ok().body(Map.of("message", "Te has unido al desafío exitosamente"));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        }
-    }
-
-    // Endpoint para obtener un desafío por ID
-    @GetMapping("/{id}")
-    public ResponseEntity<?> obtenerDesafioPorId(@PathVariable Long id) {
-        try {
-            Object desafio = desafioServicio.buscarPorId(id);
-            return ResponseEntity.ok(desafio);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }

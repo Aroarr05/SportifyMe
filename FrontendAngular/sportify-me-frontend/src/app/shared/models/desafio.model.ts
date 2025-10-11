@@ -1,19 +1,21 @@
-import { Usuario } from "./usuario.model";
-import { Progreso } from "./progreso.model";
-import { Comentario } from "./comentario.model";
-
 export interface Desafio {
   id: number;
-  nombre: string;
+  titulo: string;                    
   descripcion: string;
-  tipoActividad: TipoActividad;
-  objetivo: string;
-  fechaCreacion: Date | string;
-  fechaLimite: Date | string;
-  creador: Usuario;
-  participantes?: Usuario[];
-  progresos?: Progreso[];
-  comentarios?: Comentario[];
+  tipoActividad: string;             
+  objetivo: number;                  
+  unidadObjetivo: string;            
+  fechaInicio: string;               
+  fechaFin: string;                 
+  creador: {
+    id: number;
+    nombre: string;
+    email: string;
+  };
+  esPublico: boolean;                
+  dificultad: string;                
+  maxParticipantes: number;          
+  imagenUrl?: string;                
 }
 
 export interface CrearDesafioDto {
@@ -21,7 +23,7 @@ export interface CrearDesafioDto {
   descripcion: string;
   tipoActividad: TipoActividad;
   objetivo: string;
-  fechaLimite: string; // Formato ISO
+  fechaLimite: string; 
 }
 
 export enum TipoActividad {

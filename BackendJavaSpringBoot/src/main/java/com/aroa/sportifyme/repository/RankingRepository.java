@@ -3,6 +3,7 @@ package com.aroa.sportifyme.repository;
 import com.aroa.sportifyme.seguridad.dto.RankingDTO;
 import com.aroa.sportifyme.modelo.Progreso;
 import com.aroa.sportifyme.modelo.Usuario;
+import com.aroa.sportifyme.modelo.Participacion; // ✅ AGREGAR
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -24,7 +25,7 @@ public interface RankingRepository extends JpaRepository<Progreso, Long> {
            "ORDER BY MAX(p.valorActual) DESC")
     List<RankingDTO> findSimpleRankingByDesafioId(@Param("desafioId") Long desafioId);
     
-    // Ranking global - CORREGIDO: COUNT devuelve Long, no BigDecimal
+    // Ranking global
     @Query("SELECT new com.aroa.sportifyme.seguridad.dto.RankingDTO(" +
            "u.id, u.nombre, COUNT(DISTINCT p.desafio.id), u.avatarUrl) " +
            "FROM Progreso p " +
@@ -33,12 +34,16 @@ public interface RankingRepository extends JpaRepository<Progreso, Long> {
            "GROUP BY u.id, u.nombre, u.avatarUrl " +
            "ORDER BY COUNT(DISTINCT p.desafio.id) DESC")
     List<RankingDTO> findGlobalRanking();
-      @Query("SELECT COUNT(p) FROM Desafio d JOIN d.participantes p WHERE d.id = :desafioId")
+    
+    // ✅ CORREGIDO: Usar Participacion en lugar de Desafio.participantes
+    @Query("SELECT COUNT(p) FROM Participacion p WHERE p.desafio.id = :desafioId")
     Long countParticipantesByDesafioId(@Param("desafioId") Long desafioId);
     
-    @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM Desafio d JOIN d.participantes p WHERE d.id = :desafioId AND p.id = :usuarioId")
+    // ✅ CORREGIDO: Usar Participacion
+    @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM Participacion p WHERE p.desafio.id = :desafioId AND p.usuario.id = :usuarioId")
     boolean esParticipante(@Param("desafioId") Long desafioId, @Param("usuarioId") Long usuarioId);
     
-    @Query("SELECT p FROM Desafio d JOIN d.participantes p WHERE d.id = :desafioId")
+    // ✅ CORREGIDO: Usar Participacion
+    @Query("SELECT p.usuario FROM Participacion p WHERE p.desafio.id = :desafioId")
     List<Usuario> findParticipantesByDesafioId(@Param("desafioId") Long desafioId);
 }

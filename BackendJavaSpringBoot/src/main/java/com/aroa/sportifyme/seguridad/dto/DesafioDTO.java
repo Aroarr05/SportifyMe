@@ -5,23 +5,34 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public record DesafioDTO(
-        Long id,  // Agregar ID
+        Long id,
         String titulo,
         String descripcion,
-        Desafio.TipoActividad tipoActividad,  // Usar el enum de Desafio
-        BigDecimal objetivo,  // Cambiar de double a BigDecimal
-        String unidadObjetivo,  // Agregar este campo que falta
+        Desafio.TipoActividad tipoActividad,
+        BigDecimal objetivo,
+        String unidadObjetivo,
         LocalDateTime fechaInicio,
         LocalDateTime fechaFin,
-        Long creadorId,
-        Boolean esPublico,  // Agregar este campo
-        String imagenUrl,  // Agregar este campo
-        Desafio.Dificultad dificultad,  // Agregar este campo
-        Integer maxParticipantes  // Agregar este campo
+        CreadorDTO creador,  
+        Boolean esPublico,
+        String imagenUrl,
+        Desafio.Dificultad dificultad,
+        Integer maxParticipantes
 ) {
     
-    // Constructor desde la entidad Desafio
+    // DTO interno para el creador
+    public record CreadorDTO(Long id, String nombre, String email) {}
+    
     public static DesafioDTO fromEntity(Desafio desafio) {
+        CreadorDTO creadorDTO = null;
+        if (desafio.getCreador() != null) {
+            creadorDTO = new CreadorDTO(
+                desafio.getCreador().getId(),
+                desafio.getCreador().getNombre(),
+                desafio.getCreador().getEmail()
+            );
+        }
+        
         return new DesafioDTO(
                 desafio.getId(),
                 desafio.getTitulo(),
@@ -31,7 +42,7 @@ public record DesafioDTO(
                 desafio.getUnidadObjetivo(),
                 desafio.getFechaInicio(),
                 desafio.getFechaFin(),
-                desafio.getCreador() != null ? desafio.getCreador().getId() : null,
+                creadorDTO,  // ✅ Usar el objeto creador
                 desafio.getEsPublico(),
                 desafio.getImagenUrl(),
                 desafio.getDificultad(),
